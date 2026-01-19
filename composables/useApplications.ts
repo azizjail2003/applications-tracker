@@ -55,6 +55,32 @@ export const useApplications = () => {
         await api.post('deleteApplication', { id });
     };
 
+    // Checklist Learning
+    const knownChecklistItems = useState<Set<string>>('knownChecklistItems', () => new Set());
+
+    const initKnownItems = () => {
+        if (import.meta.client) {
+            const stored = localStorage.getItem('msc_tracker_known_items');
+            if (stored) {
+                try {
+                    const items = JSON.parse(stored);
+                    items.forEach((i: string) => knownChecklistItems.value.add(i));
+                } catch (e) { console.error(e); }
+            }
+        }
+    };
+
+    const addKnownItem = (item: string) => {
+        if (!item || !item.trim()) return;
+        const clean = item.trim();
+        if (!knownChecklistItems.value.has(clean)) {
+            knownChecklistItems.value.add(clean);
+            if (import.meta.client) {
+                localStorage.setItem('msc_tracker_known_items', JSON.stringify(Array.from(knownChecklistItems.value)));
+            }
+        }
+    };
+
     // Checklist
     const upsertChecklistItem = async (item: ChecklistItem) => {
         const index = checklistItems.value.findIndex(i => i.id === item.id);
@@ -62,6 +88,9 @@ export const useApplications = () => {
 
         if (index >= 0) checklistItems.value[index] = newItem;
         else checklistItems.value.push(newItem);
+
+        // Learn
+        addKnownItem(item.item);
 
         await api.post('upsertChecklistItem', { data: item });
     };
@@ -147,6 +176,8 @@ export const useApplications = () => {
         upsertRecommender,
         deleteRecommender,
         seedTemplate,
-        recalculateProgress
+        recalculateProgress,
+        knownChecklistItems,
+        initKnownItems
     };
 };
