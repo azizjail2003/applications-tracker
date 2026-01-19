@@ -65,7 +65,7 @@
       </div>
 
       <!-- Delete -->
-      <button @click="remove(item.id)" class="text-brand-dark/30 dark:text-brand-light/30 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+      <button @click="remove(item.id, item.item)" class="text-brand-dark/30 dark:text-brand-light/30 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
@@ -82,6 +82,7 @@ const props = defineProps<{
 }>();
 
 const { checklistItems, upsertChecklistItem, deleteChecklistItem, knownChecklistItems, initKnownItems } = useApplications();
+const { ask } = useConfirm();
 
 onMounted(() => {
     initKnownItems();
@@ -92,7 +93,7 @@ const items = computed(() => checklistItems.value.filter(i => i.application_id =
 const suggestions = computed(() => {
     // Return known items that are NOT in the current list
     const currentNames = new Set(items.value.map(i => i.item.toLowerCase().trim()));
-    return Array.from(knownChecklistItems.value).filter(name => !currentNames.has(name.toLowerCase().trim()));
+    return Object.keys(knownChecklistItems.value).filter(name => !currentNames.has(name.toLowerCase().trim()));
 });
 
 const add = async () => {
@@ -110,13 +111,14 @@ const quickAdd = async (name: string) => {
     id: crypto.randomUUID(),
     application_id: props.appId,
     item: name,
+    link: knownChecklistItems.value[name] || '',
     state: 'missing',
   };
   await upsertChecklistItem(newItem);
 };
 
-const remove = async (id: string) => {
-  if (confirm('Delete this item?')) {
+const remove = async (id: string, name: string) => {
+  if (await ask(`Delete checklist item "${name || 'Unnamed'}"?`, 'Delete Item')) {
     await deleteChecklistItem(id);
   }
 };

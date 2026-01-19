@@ -56,45 +56,61 @@ export const useApplications = () => {
     };
 
     // Checklist Learning
-    const knownChecklistItems = useState<Set<string>>('knownChecklistItems', () => new Set());
+    // Checklist Learning: Map of "Item Name" -> "Link"
+    const knownChecklistItems = useState<Record<string, string>>('knownChecklistItems', () => ({}));
 
     const initKnownItems = async () => {
         // 1. Load from local storage (fast)
         if (import.meta.client) {
-            const stored = localStorage.getItem('msc_tracker_known_items');
+            const stored = localStorage.getItem('msc_tracker_known_items_v2');
             if (stored) {
                 try {
                     const items = JSON.parse(stored);
-                    items.forEach((i: string) => knownChecklistItems.value.add(i));
-                } catch (e) { console.error(e); }
+                    Object.assign(knownChecklistItems.value, items);
+                } catch (e) {
+                    // Fallback to v1 (clean up old array format if exists)
+                    try {
+                        const oldStored = localStorage.getItem('msc_tracker_known_items');
+                        if (oldStored) {
+                            const oldItems = JSON.parse(oldStored);
+                            if (Array.isArray(oldItems)) {
+                                oldItems.forEach(i => knownChecklistItems.value[i] = '');
+                            }
+                        }
+                    } catch (e2) { }
+                }
             }
         }
 
-        // 2. Fetch from backend (comprehensive) - triggers only once per session ideally
-        // We can check if we likely have data, or just fetch always in background
+        // 2. Fetch from backend
         try {
             const allItems = await api.get<ChecklistItem[]>('listChecklist');
             if (allItems && Array.isArray(allItems)) {
                 allItems.forEach(i => {
                     if (i.item && i.item.trim()) {
-                        addKnownItem(i.item); // This naturally dedupes and saves to local storage
+                        addKnownItem(i.item, i.link || '');
                     }
                 });
             }
-        } catch (e) {
-            // Silently fail if API not updated yet or network error, 
-            // suggestions just won't be as good.
-            console.warn('Could not fetch global checklist history', e);
-        }
+        } catch (e) { console.warn(e); }
     };
 
-    const addKnownItem = (item: string) => {
+    const addKnownItem = (item: string, link: string = '') => {
         if (!item || !item.trim()) return;
         const clean = item.trim();
-        if (!knownChecklistItems.value.has(clean)) {
-            knownChecklistItems.value.add(clean);
+        const existingLink = knownChecklistItems.value[clean];
+
+        // Update if we have a link and didn't before, or just always update latest link? 
+        // Let's favor existing links unless new one is provided
+        if ((link && link !== existingLink)) {
+            knownChecklistItems.value[clean] = link;
             if (import.meta.client) {
-                localStorage.setItem('msc_tracker_known_items', JSON.stringify(Array.from(knownChecklistItems.value)));
+                localStorage.setItem('msc_tracker_known_items_v2', JSON.stringify(knownChecklistItems.value));
+            }
+        } else if (!existingLink) {
+            knownChecklistItems.value[clean] = '';
+            if (import.meta.client) {
+                localStorage.setItem('msc_tracker_known_items_v2', JSON.stringify(knownChecklistItems.value));
             }
         }
     };
@@ -108,7 +124,7 @@ export const useApplications = () => {
         else checklistItems.value.push(newItem);
 
         // Learn
-        addKnownItem(item.item);
+        addKnownItem(item.item, item.link || '');
 
         await api.post('upsertChecklistItem', { data: item });
     };

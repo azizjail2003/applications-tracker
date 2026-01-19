@@ -29,7 +29,7 @@
             placeholder="Email Address"
           />
         </div>
-        <button @click="remove(item.id)" class="text-gray-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+        <button @click="remove(item.id, item.name)" class="text-gray-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
@@ -69,6 +69,7 @@ const props = defineProps<{
 }>();
 
 const { recommenders, upsertRecommender, deleteRecommender } = useApplications();
+const { ask } = useConfirm();
 const items = computed(() => recommenders.value.filter(r => r.application_id === props.appId));
 
 const add = async () => {
@@ -82,8 +83,8 @@ const add = async () => {
   await upsertRecommender(newItem);
 };
 
-const remove = async (id: string) => {
-  if (confirm('Delete recommender?')) {
+const remove = async (id: string, name: string) => {
+  if (await ask(`Are you sure you want to delete recommender "${name || 'Unnamed'}"?`, 'Delete Recommender')) {
     await deleteRecommender(id);
   }
 };

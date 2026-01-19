@@ -135,9 +135,7 @@
       </div>
     </div>
     
-    <div v-if="loading && !app" class="flex justify-center items-center h-screen">
-       <div class="animate-spin rounded-full h-12 w-12 border-4 border-brand-teal border-t-transparent"></div>
-    </div>
+    <!-- Loader handled globally -->
   </div>
 </template>
 
@@ -173,8 +171,10 @@ const save = async () => {
     }
 };
 
+const { ask } = useConfirm();
+
 const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this entire application?')) {
+    if (await ask(t('confirm.delete_app') || 'Are you sure you want to delete this entire application?', 'Delete Application')) {
         await deleteApplication(appId);
         router.push('/applications');
     }

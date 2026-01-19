@@ -1,8 +1,10 @@
 <template>
-  <div class="min-h-screen transition-colors duration-300 dark:bg-slate-900 bg-gray-50">
+  <div class="min-h-screen transition-colors duration-300 dark:bg-brand-dark bg-brand-light font-sans text-brand-dark dark:text-brand-light">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <ConfirmModal />
+    <GlobalLoader />
   </div>
 </template>
 
