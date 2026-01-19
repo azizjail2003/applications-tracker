@@ -1,3 +1,4 @@
+<template>
   <div class="space-y-3">
     <div class="flex items-center justify-between mb-4">
       <div class="text-sm text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-wide">Items</div>
