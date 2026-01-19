@@ -127,9 +127,9 @@ export const useApplications = () => {
             progress = Math.round((doneItems.length / effectiveItems.length) * 100);
         }
 
-        const appIdx = applications.value.findIndex(a => a.id === appId);
-        if (appIdx >= 0) {
-            applications.value[appIdx].progress = progress;
+        const app = applications.value.find(a => a.id === appId);
+        if (app) {
+            app.progress = progress;
         }
     };
 
