@@ -1,94 +1,112 @@
 <template>
-  <div class="min-h-screen bg-slate-900 text-white font-sans selection:bg-indigo-500 selection:text-white pb-20">
-     <div class="container mx-auto px-6 py-12 max-w-4xl">
-        <div class="text-center mb-12 animate-float">
-           <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Welcome to MSc Tracker</h1>
-           <p class="text-xl text-indigo-200">Your personal command center for grad school applications.</p>
+  <div class="min-h-screen bg-brand-light dark:bg-brand-dark font-sans text-brand-dark dark:text-brand-light transition-colors duration-300">
+    <div class="container mx-auto px-6 py-12 max-w-4xl">
+      <!-- Header -->
+      <div class="text-center mb-16 space-y-4">
+        <div class="inline-block px-4 py-1.5 rounded-full bg-brand-teal/10 text-brand-teal text-xs font-bold uppercase tracking-widest mb-2 border border-brand-teal/20">
+          {{ t('setup.title') }}
         </div>
+        <h1 class="text-5xl font-extrabold tracking-tight text-brand-dark dark:text-brand-light">
+          Welcome to <span class="text-brand-teal uppercase">MSc</span> Tracker
+        </h1>
+        <p class="text-lg text-brand-dark/60 dark:text-brand-light/60 max-w-2xl mx-auto leading-relaxed">
+          {{ t('setup.subtitle') }}
+        </p>
+      </div>
 
-        <div class="glass p-8 rounded-3xl shadow-2xl border border-white/10 mb-12">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-               <span class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm">1</span>
-               Connect Your Database
+      <!-- Main Config Glass Card -->
+      <div class="glass p-10 rounded-[2.5rem] shadow-2xl border border-brand-dark/10 dark:border-brand-light/10 mb-12 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-teal/5 to-transparent pointer-events-none"></div>
+        
+        <div class="relative z-10">
+          <h2 class="text-2xl font-bold mb-8 flex items-center gap-4">
+            <span class="w-10 h-10 rounded-2xl bg-brand-dark dark:bg-brand-teal flex items-center justify-center text-brand-light text-xl shadow-lg ring-4 ring-brand-teal/10">1</span>
+            {{ t('setup.connect_db') }}
+          </h2>
+          
+          <div class="space-y-6 text-brand-dark/70 dark:text-brand-light/70 leading-relaxed mb-10">
+            <p>{{ t('setup.desc') }}</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              <!-- Step A -->
+              <div class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300">
+                <div class="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center mb-4 text-brand-teal group-hover:scale-110 transition-transform font-bold">A</div>
+                <h3 class="font-bold text-brand-dark dark:text-brand-light mb-3 tracking-tight">{{ t('setup.step_a') }}</h3>
+                <ol class="text-xs space-y-2 opacity-80 list-decimal list-inside pl-1">
+                  <li>Go to <a href="https://sheets.new" target="_blank" class="text-brand-teal font-bold underline">sheets.new</a></li>
+                  <li>Create tabs: <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">applications</code>, <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">checklist</code>, <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">recommenders</code></li>
+                  <li>Add the headers as defined in the documentation</li>
+                </ol>
+              </div>
+
+              <!-- Step B -->
+              <div class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300">
+                <div class="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center mb-4 text-brand-teal group-hover:scale-110 transition-transform font-bold">B</div>
+                <h3 class="font-bold text-brand-dark dark:text-brand-light mb-3 tracking-tight">{{ t('setup.step_b') }}</h3>
+                <ol class="text-xs space-y-2 opacity-80 list-decimal list-inside pl-1">
+                  <li>Open <strong>Extensions > Apps Script</strong></li>
+                  <li>Paste the code, Replace your <strong>SHEET_ID</strong></li>
+                  <li>Click <strong>Deploy > New deployment</strong> (Web App)</li>
+                  <li>Set access to <strong>Anyone</strong> and copy URL</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Box -->
+          <div class="bg-brand-dark/95 dark:bg-brand-dark rounded-3xl p-6 border border-white/10 relative group mb-12 shadow-inner overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-tr from-brand-teal/10 to-transparent opacity-50"></div>
+            <button @click="copyCode" class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-brand-teal hover:bg-white hover:text-brand-dark text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xl active:scale-95 group-hover:ring-4 ring-brand-teal/20">
+               <svg v-if="!copied" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+               <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+               {{ copied ? 'Copied!' : 'Copy Code' }}
+            </button>
+            <pre class="relative z-10 text-[10px] text-brand-light/60 font-mono overflow-x-auto h-48 scrollbar-thin scrollbar-thumb-brand-teal/50 scrollbar-track-transparent pr-4">{{ backendCode }}</pre>
+          </div>
+
+          <!-- Final Step: URL Input -->
+          <div class="border-t border-brand-dark/10 dark:border-brand-light/10 pt-10">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-4">
+              <span class="w-10 h-10 rounded-2xl bg-brand-dark dark:bg-brand-teal flex items-center justify-center text-brand-light text-xl shadow-lg ring-4 ring-brand-teal/10">2</span>
+              {{ t('setup.enter_url') }}
             </h2>
-            
-            <p class="text-gray-300 mb-6">
-               This app runs entirely in your browser but acts as a frontend for your own Google Sheet. 
-               To get started, you need to create a sheet and a backend script.
+            <div class="flex flex-col md:flex-row gap-4 items-stretch">
+              <input 
+                v-model="apiUrl" 
+                placeholder="https://script.google.com/macros/s/..../exec" 
+                class="flex-1 bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/10 dark:border-brand-light/10 rounded-2xl px-6 py-4 text-brand-dark dark:text-brand-light placeholder-brand-dark/30 dark:placeholder-brand-light/30 focus:ring-4 focus:ring-brand-teal/20 focus:border-brand-teal transition-all outline-none text-sm font-mono shadow-inner"
+              />
+              <button 
+                @click="saveAndStart" 
+                :disabled="!isValidUrl"
+                class="px-10 py-4 bg-brand-teal text-white font-bold rounded-2xl shadow-xl shadow-brand-teal/20 hover:bg-brand-dark dark:hover:bg-brand-light dark:hover:text-brand-dark transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-3"
+              >
+                <span>{{ t('setup.launch') }}</span>
+              </button>
+            </div>
+            <p v-if="error" class="text-rose-500 text-xs mt-4 pl-2 flex items-center gap-1">
+               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               {{ error }}
             </p>
-
-            <div class="space-y-4 mb-8">
-               <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                  <h3 class="font-bold text-indigo-300 mb-2">Step A: Create the Sheet</h3>
-                  <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2 ml-2">
-                     <li>Go to <a href="https://sheets.new" target="_blank" class="text-indigo-400 underline hover:text-white">sheets.new</a> to create a new Google Sheet.</li>
-                     <li>Create 3 tabs named exactly: <code class="bg-black/30 px-1 py-0.5 rounded text-yellow-300">applications</code>, <code class="bg-black/30 px-1 py-0.5 rounded text-yellow-300">checklist</code>, <code class="bg-black/30 px-1 py-0.5 rounded text-yellow-300">recommenders</code>.</li>
-                     <li>
-                        Copy these headers into row 1 of each sheet:
-                        <ul class="list-disc list-inside mt-2 ml-4 space-y-1 text-xs text-gray-400 font-mono">
-                           <li><strong>applications</strong>: id, university, program, country, status, deadline_app, deadline_scholarship, portal_apply_url, portal_status_url, progress, priority, notes, updated_at</li>
-                           <li><strong>checklist</strong>: id, application_id, item, state, link, updated_at</li>
-                           <li><strong>recommenders</strong>: id, application_id, name, email, state, last_nudge_date, updated_at</li>
-                        </ul>
-                     </li>
-                  </ol>
-               </div>
-
-               <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                  <h3 class="font-bold text-indigo-300 mb-2">Step B: Deploy the Script</h3>
-                  <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2 ml-2">
-                     <li>In your Google Sheet, click <strong>Extensions > Apps Script</strong>.</li>
-                     <li>Delete any code in the editor and paste the code below.</li>
-                     <li>
-                        <strong>CRITICAL:</strong> Replace <code class="text-rose-400">const SHEET_ID = '...';</code> at the top of the script with your actual Sheet ID (found in the URL: docs.google.com/spreadsheets/d/<strong>YOUR_ID</strong>/edit).
-                     </li>
-                     <li>Click <strong>Deploy > New deployment</strong>.</li>
-                     <li>Select type: <strong>Web app</strong>.</li>
-                     <li>Set <strong>Who has access</strong> to <strong>Anyone</strong> (this allows the app to talk to your sheet).</li>
-                     <li>Click <strong>Deploy</strong> and copy the <strong>Web App URL</strong> (ends in <code>/exec</code>).</li>
-                  </ol>
-               </div>
-               
-               <div class="bg-black/40 rounded-xl p-4 border border-white/10 relative group">
-                  <button @click="copyCode" class="absolute top-4 right-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded transition-colors shadow-lg">
-                     {{ copied ? 'Copied!' : 'Copy Code' }}
-                  </button>
-                  <pre class="text-xs text-gray-300 font-mono overflow-x-auto h-48 scrollbar-thin scrollbar-thumb-indigo-500/50 scrollbar-track-transparent p-2">{{ backendCode }}</pre>
-               </div>
-            </div>
-
-            <div class="border-t border-white/10 pt-8">
-               <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-sm">2</span>
-                  Enter Web App URL
-               </h2>
-               <div class="flex flex-col md:flex-row gap-4">
-                  <input 
-                     v-model="apiUrl" 
-                     placeholder="https://script.google.com/macros/s/..../exec" 
-                     class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  />
-                  <button 
-                     @click="saveAndStart" 
-                     :disabled="!isValidUrl"
-                     class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                     Launch App 🚀
-                  </button>
-               </div>
-               <p v-if="error" class="text-rose-400 text-sm mt-2">{{ error }}</p>
-            </div>
+          </div>
         </div>
-     </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useTranslation();
 const config = useRuntimeConfig();
-const apiUrl = ref(config.public.apiBase || '');
+const apiUrl = ref('');
 const copied = ref(false);
 const error = ref('');
 const router = useRouter();
+
+onMounted(() => {
+   // Try to pre-fill from localStorage if available, or fallback to config
+   apiUrl.value = localStorage.getItem('msc_tracker_api_url') || config.public.apiBase || '';
+});
 
 // Validate URL format simply
 const isValidUrl = computed(() => {

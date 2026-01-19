@@ -166,8 +166,6 @@ const save = async () => {
         recalculateProgress(appId);
         // Save
         await upsertApplication(app.value);
-        // Redirect
-        router.push('/applications');
     }
 };
 
