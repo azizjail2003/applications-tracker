@@ -58,7 +58,8 @@ export const useApplications = () => {
     // Checklist Learning
     const knownChecklistItems = useState<Set<string>>('knownChecklistItems', () => new Set());
 
-    const initKnownItems = () => {
+    const initKnownItems = async () => {
+        // 1. Load from local storage (fast)
         if (import.meta.client) {
             const stored = localStorage.getItem('msc_tracker_known_items');
             if (stored) {
@@ -67,6 +68,23 @@ export const useApplications = () => {
                     items.forEach((i: string) => knownChecklistItems.value.add(i));
                 } catch (e) { console.error(e); }
             }
+        }
+
+        // 2. Fetch from backend (comprehensive) - triggers only once per session ideally
+        // We can check if we likely have data, or just fetch always in background
+        try {
+            const allItems = await api.get<ChecklistItem[]>('listChecklist');
+            if (allItems && Array.isArray(allItems)) {
+                allItems.forEach(i => {
+                    if (i.item && i.item.trim()) {
+                        addKnownItem(i.item); // This naturally dedupes and saves to local storage
+                    }
+                });
+            }
+        } catch (e) {
+            // Silently fail if API not updated yet or network error, 
+            // suggestions just won't be as good.
+            console.warn('Could not fetch global checklist history', e);
         }
     };
 

@@ -52,7 +52,12 @@ function handleRequest(e) {
                 break;
 
             case 'listChecklist':
-                data = getSheetData(ss, 'checklist').filter(item => item.application_id === params.application_id);
+                const allChecklistItems = getSheetData(ss, 'checklist');
+                if (params && params.application_id) {
+                    data = allChecklistItems.filter(item => item.application_id === params.application_id);
+                } else {
+                    data = allChecklistItems;
+                }
                 break;
             case 'upsertChecklistItem':
                 data = upsertRow(ss, 'checklist', reqData);
