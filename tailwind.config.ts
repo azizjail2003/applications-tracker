@@ -9,6 +9,21 @@ export default {
     ],
     theme: {
         extend: {
+            colors: {
+                brand: {
+                    dark: '#043c50',       // Main Dark Background
+                    'dark-hover': '#064e66',
+                    'dark-active': '#032b3a',
+
+                    light: '#EED9BE',      // Main Light Background/Text
+                    'light-hover': '#f5e6d0',
+                    'light-active': '#dcc0a0',
+
+                    // Functional tones derived from the palette
+                    gold: '#C5A880',       // Darker version of light for accents
+                    teal: '#0A5C75',       // Lighter version of dark for accents
+                }
+            },
             fontFamily: {
                 sans: ['Space Grotesk', 'sans-serif'],
             },

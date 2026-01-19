@@ -2,55 +2,68 @@
   <div>
     <AppHeader />
     <div class="container mx-auto px-6 py-8 max-w-6xl">
-       <div class="mb-10 text-center md:text-left">
-         <h1 class="text-4xl font-bold dark:text-white text-gray-900 mb-2 animate-float">{{ t('dashboard.welcome') }}</h1>
-         <p class="dark:text-indigo-200 text-gray-600 text-lg">{{ t('dashboard.subtitle') }}</p>
-       </div>
-       
-       <StatCards />
-       
-       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <DueSoonList />
-         
-         <div class="glass-card rounded-2xl overflow-hidden">
-           <div class="px-6 py-4 dark:border-b dark:border-white/10 dark:bg-white/5 border-b border-gray-100 bg-gray-50/50">
-             <h2 class="text-sm font-bold dark:text-white text-gray-800 uppercase tracking-widest">🏆 {{ t('dashboard.top_priority') }}</h2>
-           </div>
-           <div class="divide-y dark:divide-white/5 divide-gray-100">
-             <NuxtLink 
-               v-for="app in priorityApps"
-               :key="app.id"
-               :to="`/applications/${app.id}`"
-               class="block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
-             >
-                <div class="flex justify-between items-center mb-2">
-                  <div>
-                     <div class="text-sm font-bold dark:text-white text-gray-900 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{{ app.university }}</div>
-                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ app.program }}</div>
-                  </div>
-                  <StatusBadge :status="app.status" />
-                </div>
-                <div class="mt-2">
-                   <div class="flex justify-between text-[10px] text-gray-500 mb-1 uppercase tracking-wider">
-                      <span>{{ t('dashboard.progress') || 'Progress' }}</span>
-                      <span class="text-indigo-600 dark:text-indigo-300">{{ app.progress }}%</span>
+      <!-- Welcome Section -->
+      <div class="mb-10 text-center md:text-left">
+        <h1 class="text-4xl md:text-5xl font-bold dark:text-brand-light text-brand-dark mb-3 tracking-tight">{{ t('dashboard.welcome') }}</h1>
+        <p class="text-lg dark:text-brand-light/60 text-brand-dark/60 font-light max-w-2xl">{{ t('dashboard.subtitle') }}</p>
+      </div>
+
+      <StatCards />
+
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Priority List (2/3 width) -->
+        <div class="lg:col-span-2">
+           <div class="glass-card rounded-2xl p-6 min-h-[400px]">
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold dark:text-brand-light text-brand-dark flex items-center gap-2">
+                   {{ t('dashboard.top_priority') }}
+                </h2>
+                <NuxtLink to="/applications" class="text-sm font-medium text-brand-teal hover:text-brand-dark dark:text-brand-light/70 dark:hover:text-brand-light transition-colors">{{ t('dashboard.view_all') }} &rarr;</NuxtLink>
+              </div>
+
+              <div class="space-y-4">
+                <NuxtLink 
+                  v-for="app in priorityApps" 
+                  :key="app.id"
+                  :to="`/applications/${app.id}`"
+                  class="block p-4 rounded-xl border border-brand-dark/5 dark:border-brand-light/5 hover:bg-brand-dark/5 dark:hover:bg-brand-light/5 transition-all group"
+                >
+                   <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center gap-3">
+                         <div class="w-10 h-10 rounded-lg bg-brand-dark dark:bg-brand-light flex items-center justify-center text-lg font-bold text-brand-light dark:text-brand-dark">
+                           {{ app.university.charAt(0) }}
+                         </div>
+                         <div>
+                            <h3 class="font-bold dark:text-brand-light text-brand-dark leading-tight group-hover:underline">{{ app.university }}</h3>
+                            <p class="text-xs dark:text-brand-light/60 text-brand-dark/60">{{ app.program }}</p>
+                         </div>
+                      </div>
+                      <StatusBadge :status="app.status" />
                    </div>
-                   <ProgressBar :percent="app.progress" />
+                   
+                   <div class="flex items-center gap-3 mt-3">
+                      <div class="flex-1">
+                        <ProgressBar :percent="app.progress" />
+                      </div>
+                      <span class="text-xs font-mono dark:text-brand-light/50 text-brand-dark/50">{{ app.progress }}%</span>
+                   </div>
+                </NuxtLink>
+                <div v-if="priorityApps.length === 0" class="p-8 text-sm text-brand-dark/40 dark:text-brand-light/40 text-center italic">
+                   {{ t('dashboard.no_priority') }}
                 </div>
-             </NuxtLink>
-             <div v-if="priorityApps.length === 0" class="p-8 text-sm text-gray-400 text-center italic">
-                {{ t('dashboard.no_priority') }}
-             </div>
+              </div>
            </div>
-         </div>
-       </div>
-       
-       <div class="mt-12 text-center">
-          <NuxtLink to="/applications" class="inline-flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-bold shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-             {{ t('dashboard.view_all') }}
-          </NuxtLink>
-       </div>
-     </div>
+        </div>
+
+        <!-- Sidebar (1/3 width) -->
+        <div class="lg:col-span-1">
+           <DueSoonList />
+        </div>
+
+      </div>
+    </div>
   </div>
 </template>
 

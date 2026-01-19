@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden backdrop-blur-sm">
+  <div class="w-full bg-brand-dark/10 dark:bg-brand-light/10 rounded-full h-2 overflow-hidden">
     <div 
-      class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-1.5 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+      class="bg-brand-dark dark:bg-brand-light h-2 rounded-full transition-all duration-500 ease-out"
       :style="{ width: Math.min(Math.max(percent, 0), 100) + '%' }"
     ></div>
   </div>

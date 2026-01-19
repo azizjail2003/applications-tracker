@@ -11,13 +11,13 @@ const props = defineProps<{ status: ApplicationStatus }>();
 
 const colorClass = computed(() => {
   switch (props.status) {
-    case 'Draft': return 'bg-gray-500/10 text-gray-300 border-gray-500/20 shadow-[0_0_5px_rgba(156,163,175,0.3)]';
-    case 'In progress': return 'bg-blue-500/10 text-blue-300 border-blue-500/20 shadow-[0_0_8px_rgba(59,130,246,0.5)]';
-    case 'Submitted': return 'bg-amber-500/10 text-amber-300 border-amber-500/20 shadow-[0_0_8px_rgba(245,158,11,0.5)]';
-    case 'Interview': return 'bg-purple-500/10 text-purple-300 border-purple-500/20 shadow-[0_0_8px_rgba(168,85,247,0.5)]';
-    case 'Accepted': return 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.6)]';
-    case 'Rejected': return 'bg-rose-500/10 text-rose-300 border-rose-500/20 shadow-[0_0_5px_rgba(244,63,94,0.4)]';
-    default: return 'bg-gray-500/10 text-gray-300 border-gray-500/20';
+    case 'Draft': return 'bg-brand-dark/5 text-brand-dark/50 border-brand-dark/10 dark:bg-brand-light/5 dark:text-brand-light/50 dark:border-brand-light/10';
+    case 'In progress': return 'bg-brand-teal/10 text-brand-teal border-brand-teal/20 dark:bg-cyan-500/10 dark:text-cyan-200 dark:border-cyan-500/20';
+    case 'Submitted': return 'bg-brand-gold/10 text-brand-gold border-brand-gold/20 dark:bg-amber-400/10 dark:text-amber-200 dark:border-amber-400/20';
+    case 'Interview': return 'bg-purple-900/5 text-purple-700 border-purple-900/10 dark:bg-purple-400/10 dark:text-purple-300 dark:border-purple-400/20';
+    case 'Accepted': return 'bg-emerald-900/5 text-emerald-700 border-emerald-900/10 dark:bg-emerald-400/10 dark:text-emerald-300 dark:border-emerald-400/20';
+    case 'Rejected': return 'bg-rose-900/5 text-rose-700 border-rose-900/10 dark:bg-rose-400/10 dark:text-rose-300 dark:border-rose-400/20';
+    default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
   }
 });
 </script>

@@ -1,34 +1,34 @@
 <template>
-  <div class="glass-card rounded-2xl overflow-hidden">
-    <div class="px-6 py-4 dark:border-b dark:border-white/10 border-b border-gray-100 flex justify-between items-center dark:bg-white/5 bg-gray-50/50">
-      <h2 class="text-sm font-bold dark:text-white text-gray-800 uppercase tracking-widest flex items-center gap-2">
-         <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+  <div class="glass-card rounded-2xl overflow-hidden flex flex-col h-full">
+    <div class="px-6 py-4 border-b border-brand-dark/5 dark:border-brand-light/10 flex justify-between items-center bg-brand-dark/5 dark:bg-brand-light/5">
+      <h2 class="text-sm font-bold dark:text-brand-light text-brand-dark uppercase tracking-widest flex items-center gap-2">
+         <span class="w-2 h-2 rounded-full bg-brand-gold animate-pulse"></span>
          {{ t('dashboard.due_soon') }}
       </h2>
-      <NuxtLink to="/applications" class="text-xs text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-white transition-colors">{{ t('dashboard.view_all') }}</NuxtLink>
+      <NuxtLink to="/applications" class="text-xs font-bold text-brand-dark/60 hover:text-brand-dark dark:text-brand-light/60 dark:hover:text-brand-light transition-colors">{{ t('dashboard.view_all') }}</NuxtLink>
     </div>
     
-    <div v-if="dueSoon.length === 0" class="p-8 text-sm text-gray-400 text-center italic">
+    <div v-if="dueSoon.length === 0" class="p-8 text-sm text-brand-dark/40 dark:text-brand-light/40 text-center italic flex-1 flex items-center justify-center">
       {{ t('dashboard.no_due_soon') }}
     </div>
     
-    <div v-else class="divide-y dark:divide-white/5 divide-gray-100">
+    <div v-else class="divide-y divide-brand-dark/5 dark:divide-brand-light/10">
       <NuxtLink 
         v-for="app in dueSoon" 
         :key="app.id"
         :to="`/applications/${app.id}`"
-        class="block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
+        class="block px-6 py-4 hover:bg-brand-dark/5 dark:hover:bg-brand-light/5 transition-colors group"
       >
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-sm font-bold dark:text-white text-gray-900 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{{ app.university }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">{{ app.program }}</div>
+            <div class="text-sm font-bold dark:text-brand-light text-brand-dark transition-colors">{{ app.university }}</div>
+            <div class="text-xs text-brand-dark/60 dark:text-brand-light/60">{{ app.program }}</div>
           </div>
           <div class="text-right">
-             <div class="text-xs font-bold text-orange-500 dark:text-orange-400 animate-pulse-slow">
+             <div class="text-xs font-bold text-brand-gold">
                {{ daysLeft(app.deadline_app) }} days left
              </div>
-             <div class="text-[10px] text-gray-500">{{ app.deadline_app }}</div>
+             <div class="text-[10px] text-brand-dark/40 dark:text-brand-light/40 font-mono mt-0.5">{{ app.deadline_app }}</div>
           </div>
         </div>
       </NuxtLink>
