@@ -22,11 +22,11 @@
                <div class="space-y-6">
                   <div>
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-widest mb-2">{{ t('detail.university') }}</label>
-                    <input v-model="app.university" @blur="save" class="block w-full text-3xl font-bold bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-dark dark:text-brand-light transition-colors" placeholder="University Name" />
+                    <input v-model="app.university" @blur="autoSave" class="block w-full text-3xl font-bold bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-dark dark:text-brand-light transition-colors" placeholder="University Name" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-widest mb-2">{{ t('detail.program') }}</label>
-                    <input v-model="app.program" @blur="save" class="block w-full text-xl bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-teal dark:text-brand-light/80 transition-colors" placeholder="Program Name" />
+                    <input v-model="app.program" @blur="autoSave" class="block w-full text-xl bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-teal dark:text-brand-light/80 transition-colors" placeholder="Program Name" />
                   </div>
                </div>
                
@@ -56,19 +56,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-brand-dark/5 dark:border-brand-light/5">
                <div>
                  <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.country') }}</label>
-                 <input v-model="app.country" @blur="save" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="e.g. UK" />
+                 <input v-model="app.country" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="e.g. UK" />
                </div>
                <div>
                  <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.priority') }} (1-5)</label>
-                 <input type="number" v-model.number="app.priority" @blur="save" min="1" max="5" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" />
+                 <input type="number" v-model.number="app.priority" @blur="autoSave" min="1" max="5" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" />
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.app_deadline') }}</label>
-                  <input type="date" v-model="app.deadline_app" @blur="save" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input type="date" v-model="app.deadline_app" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.scholarship_deadline') }}</label>
-                  <input type="date" v-model="app.deadline_scholarship" @blur="save" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input type="date" v-model="app.deadline_scholarship" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
                </div>
             </div>
             
@@ -77,7 +77,7 @@
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.app_portal') }}</label>
                   <div class="flex">
-                    <input v-model="app.portal_apply_url" @blur="save" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
+                    <input v-model="app.portal_apply_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
                     <a v-if="app.portal_apply_url" :href="app.portal_apply_url" target="_blank" class="bg-brand-teal hover:bg-brand-dark border border-brand-teal px-3 py-2 rounded-r-lg flex items-center justify-center transition-colors text-white">
                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     </a>
@@ -86,7 +86,7 @@
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.status_portal') }}</label>
                   <div class="flex">
-                    <input v-model="app.portal_status_url" @blur="save" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
+                    <input v-model="app.portal_status_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
                     <a v-if="app.portal_status_url" :href="app.portal_status_url" target="_blank" class="bg-brand-teal hover:bg-brand-dark border border-brand-teal px-3 py-2 rounded-r-lg flex items-center justify-center transition-colors text-white">
                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     </a>
@@ -124,7 +124,7 @@
             </h3>
             <textarea 
                v-model="app.notes" 
-               @blur="save" 
+               @blur="autoSave" 
                class="flex-1 min-h-[400px] w-full bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-xl text-sm text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent p-4 placeholder-brand-dark/40 dark:placeholder-brand-light/40 leading-relaxed transition-colors"
                :placeholder="t('detail.notes_placeholder')"
             ></textarea>
@@ -160,12 +160,18 @@ onMounted(async () => {
 
 const app = computed(() => applications.value.find(a => a.id === appId));
 
+const autoSave = async () => {
+    if (app.value) {
+        recalculateProgress(appId);
+        await upsertApplication(app.value);
+    }
+};
+
 const save = async () => {
     if (app.value) {
-        // Auto-calculate progress
         recalculateProgress(appId);
-        // Save
         await upsertApplication(app.value);
+        router.push('/applications');
     }
 };
 

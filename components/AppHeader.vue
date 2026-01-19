@@ -8,6 +8,21 @@
         </div>
         <span class="font-bold text-xl tracking-tight text-brand-dark dark:text-brand-light">MSc<span class="font-light opacity-75">Tracker</span></span>
       </NuxtLink>
+
+      <!-- Saving Indicator -->
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-500 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="saving" class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-brand-teal/10 border border-brand-teal/20">
+          <div class="w-1.5 h-1.5 bg-brand-teal rounded-full animate-pulse"></div>
+          <span class="text-[10px] font-bold text-brand-teal uppercase tracking-widest">Saving...</span>
+        </div>
+      </Transition>
       
       <div class="flex items-center gap-6">
         <!-- Navigation -->
@@ -59,6 +74,7 @@
 <script setup lang="ts">
 const { isDark, toggleTheme } = useTheme();
 const { t, locale, setLocale } = useTranslation();
+const { saving } = useApplications();
 
 const toggleLang = () => {
   setLocale(locale.value === 'en' ? 'fr' : 'en');
