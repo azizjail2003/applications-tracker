@@ -6,6 +6,7 @@ export const useApplications = () => {
     const checklistItems = useState<ChecklistItem[]>('checklistItems', () => []);
     const recommenders = useState<Recommender[]>('recommenders', () => []);
     const loading = useState<boolean>('loading', () => false);
+    const saving = useState<boolean>('saving', () => false);
 
     const fetchAll = async () => {
         loading.value = true;
@@ -33,6 +34,7 @@ export const useApplications = () => {
     };
 
     const upsertApplication = async (app: Application) => {
+        saving.value = true;
         // Optimistic update
         const index = applications.value.findIndex(a => a.id === app.id);
         if (index >= 0) {
@@ -48,6 +50,7 @@ export const useApplications = () => {
             const idx = applications.value.findIndex(a => a.id === res.id);
             if (idx >= 0) applications.value[idx] = res;
         }
+        saving.value = false;
     };
 
     const deleteApplication = async (id: string) => {
@@ -117,6 +120,7 @@ export const useApplications = () => {
 
     // Checklist
     const upsertChecklistItem = async (item: ChecklistItem) => {
+        saving.value = true;
         const index = checklistItems.value.findIndex(i => i.id === item.id);
         const newItem = { ...item, updated_at: new Date().toISOString() };
 
@@ -127,6 +131,7 @@ export const useApplications = () => {
         addKnownItem(item.item, item.link || '');
 
         await api.post('upsertChecklistItem', { data: item });
+        saving.value = false;
     };
 
     const deleteChecklistItem = async (id: string) => {
@@ -136,6 +141,7 @@ export const useApplications = () => {
 
     // Recommenders
     const upsertRecommender = async (rec: Recommender) => {
+        saving.value = true;
         const index = recommenders.value.findIndex(r => r.id === rec.id);
         const newRec = { ...rec, updated_at: new Date().toISOString() };
 
@@ -143,6 +149,7 @@ export const useApplications = () => {
         else recommenders.value.push(newRec);
 
         await api.post('upsertRecommender', { data: rec });
+        saving.value = false;
     };
 
     const deleteRecommender = async (id: string) => {
@@ -201,6 +208,7 @@ export const useApplications = () => {
         checklistItems,
         recommenders,
         loading,
+        saving,
         fetchAll,
         fetchDetails,
         upsertApplication,

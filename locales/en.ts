@@ -61,5 +61,19 @@ export default {
         step_b: 'Step B: Deploy the Script',
         enter_url: 'Enter Web App URL',
         launch: 'Launch App 🚀',
+    },
+    loading: {
+        title: 'Syncing Data...',
+        subtitle: 'Please wait while we update your sheet.'
+    },
+    confirm: {
+        title: 'Confirm Action',
+        save: 'Save Changes',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        delete: 'Delete',
+        delete_app: 'Are you sure you want to delete this entire application?',
+        delete_item: 'Are you sure you want to delete this item?',
+        delete_rec: 'Are you sure you want to delete this recommender?'
     }
 };

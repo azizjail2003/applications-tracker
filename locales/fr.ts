@@ -61,5 +61,19 @@ export default {
         step_b: 'Étape B : Déployer le script',
         enter_url: 'Entrez l\'URL de la Web App',
         launch: 'Lancer l\'application 🚀',
+    },
+    loading: {
+        title: 'Synchronisation...',
+        subtitle: 'Veuillez patienter pendant la mise à jour.'
+    },
+    confirm: {
+        title: 'Confirmer l\'action',
+        save: 'Enregistrer',
+        cancel: 'Annuler',
+        confirm: 'Confirmer',
+        delete: 'Supprimer',
+        delete_app: 'Êtes-vous sûr de vouloir supprimer cette candidature ?',
+        delete_item: 'Êtes-vous sûr de vouloir supprimer cet élément ?',
+        delete_rec: 'Êtes-vous sûr de vouloir supprimer ce recommandant ?'
     }
 };
