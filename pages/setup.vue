@@ -151,8 +151,8 @@
                   <li>Paste the code, Replace your <strong>SHEET_ID</strong></li>
                   <li>Click <strong>Deploy > New deployment</strong> (Web App)</li>
                   <li>Set access to <strong>Anyone</strong> and copy URL</li>
-                  <li class="p-2 bg-brand-teal/10 rounded-xl border border-brand-teal/20 text-brand-teal font-bold animate-pulse mt-2">
-                     ⚠️ CRITICAL: Run "sendTestEmail" once in the Script Editor and click "Authorize" when prompted!
+                  <li class="p-4 bg-rose-500/10 rounded-2xl border-2 border-rose-500 text-rose-500 font-bold animate-pulse mt-4">
+                     🚫 STOP! To avoid CORS errors: <br/> Run "sendTestEmail" once in the Script Editor and click "Authorize" when prompted!
                   </li>
                 </ol>
               </div>

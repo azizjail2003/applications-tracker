@@ -49,9 +49,12 @@ export const useApi = () => {
             return (json.data !== undefined ? json.data : json) as T;
         } catch (error: any) {
             console.error(`API Call Failed (${action}):`, error);
-            // Help user identify Authorization as the likely culprit if it's a fetch error
+
+            // Helpful Diagnostic for the user
             if (error instanceof TypeError && error.message === 'Failed to fetch') {
-                console.warn('CORS/Fetch error often means Google Apps Script is not authorized or deployed correctly.');
+                const diag = "CONNECTION BLOCKED: This usually means you haven't authorized your script yet. \n\nGo to your Apps Script Editor, run 'sendTestEmail' once, and click 'Authorize'.";
+                alert(diag);
+                throw new Error(diag);
             }
             throw error;
         }
