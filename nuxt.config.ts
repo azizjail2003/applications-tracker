@@ -3,7 +3,13 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+
+  site: {
+    url: 'https://msc-application-tracker.vercel.app', // TODO: user should update this to their actual domain
+    name: 'MSc Applications Tracker',
+  },
+
   runtimeConfig: {
     public: {
       apiBase: '', // Overridden by NUXT_PUBLIC_API_BASE

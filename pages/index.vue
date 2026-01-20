@@ -119,4 +119,31 @@ const priorityApps = computed(() => {
     .sort((a, b) => b.priority - a.priority)
     .slice(0, 5);
 });
+
+// Structural Data (JSON-LD) for SEO
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'MSc Application Tracker',
+        'applicationCategory': 'EducationalApplication',
+        'operatingSystem': 'Web',
+        'offers': {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'USD'
+        },
+        'description': 'A free, open-source dashboard to track university master\'s applications, deadlines, and requirements.',
+        'author': {
+           '@type': 'Person',
+           'name': 'Abdelaziz Jail'
+        }
+      })
+    }
+  ]
+});
+
 </script>
