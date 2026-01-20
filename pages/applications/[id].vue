@@ -33,7 +33,7 @@
                <div class="space-y-6 md:text-right">
                   <div class="flex flex-col md:items-end">
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-wide mb-2">{{ t('detail.status') }}</label>
-                    <select :disabled="isReadOnly" v-model="app.status" @change="save" class="block w-full md:w-48 bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 text-brand-dark dark:text-brand-light rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <select :disabled="isReadOnly" v-model="app.status" @change="autoSave" class="block w-full md:w-48 bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 text-brand-dark dark:text-brand-light rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                       <option value="Draft">Draft</option>
                       <option value="In progress">In Progress</option>
                       <option value="Submitted">Submitted</option>
