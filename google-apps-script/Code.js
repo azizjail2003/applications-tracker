@@ -84,6 +84,10 @@ function handleRequest(e) {
                 data = { success: true };
                 break;
 
+            case 'enableReminders':
+                data = setupReminders();
+                break;
+
             default:
                 throw new Error('Unknown action: ' + reqAction);
         }
@@ -99,7 +103,25 @@ function handleRequest(e) {
     }
 }
 
-// ... handleRequest implementation ...
+
+function setupReminders() {
+    const triggers = ScriptApp.getProjectTriggers();
+    let exists = false;
+
+    triggers.forEach(t => {
+        if (t.getHandlerFunction() === 'checkDeadlines') exists = true;
+    });
+
+    if (!exists) {
+        ScriptApp.newTrigger('checkDeadlines')
+            .timeBased()
+            .everyDays(1)
+            .atHour(8)
+            .create();
+        return { success: true, message: 'Created daily trigger for 8am.' };
+    }
+    return { success: true, message: 'Trigger already exists.' };
+}
 
 function checkDeadlines() {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -110,16 +132,16 @@ function checkDeadlines() {
     const alerts = [];
 
     applications.forEach(app => {
-        if (!app.app_deadline) return;
+        if (!app.deadline_app) return;
 
-        const deadline = new Date(app.app_deadline);
+        const deadline = new Date(app.deadline_app);
         deadline.setHours(0, 0, 0, 0);
 
         const diffTime = deadline.getTime() - today.getTime();
-        const diffDays = diffTime / (1000 * 3600 * 24);
+        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24)); // Use ceil to be safer with timezones
 
         if (diffDays === 7 || diffDays === 3 || diffDays === 1) {
-            alerts.push(`📅 ${diffDays} days left: ${app.university} - ${app.program} (Due: ${app.app_deadline})`);
+            alerts.push(`📅 ${diffDays} days left: ${app.university} - ${app.program} (Due: ${new Date(app.deadline_app).toLocaleDateString()})`);
         }
     });
 
@@ -129,9 +151,6 @@ function checkDeadlines() {
         const body = `You have upcoming deadlines:\n\n${alerts.join('\n')}\n\nGood luck!\n\n--\nMSc Application Tracker`;
 
         MailApp.sendEmail(recipient, subject, body);
-        console.log(`Sent email to ${recipient} with ${alerts.length} alerts.`);
-    } else {
-        console.log("No deadlines found for today.");
     }
 }
 

@@ -164,6 +164,13 @@ const uniqueMissingItems = computed(() => {
     return Array.from(set).sort();
 });
 
+const enableReminders = async () => {
+    if (confirm('Enable daily 8AM email reminders for deadlines? This requires that you have updated your backend script.')) {
+        await api.post('enableReminders', {});
+        alert('Reminders enabled! You will get emails at 8AM for deadlines in 7, 3, and 1 days.');
+    }
+};
+
 const getMissingForApp = (appId: string) => {
     return appsWithMissing.value.get(appId) || [];
 };
