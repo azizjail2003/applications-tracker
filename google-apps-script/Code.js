@@ -85,7 +85,19 @@ function handleRequest(e) {
                 break;
 
             case 'enableReminders':
-                data = setupReminders();
+                data = setupReminders(true);
+                break;
+
+            case 'disableReminders':
+                data = setupReminders(false);
+                break;
+
+            case 'checkReminderStatus':
+                data = { enabled: hasTrigger() };
+                break;
+
+            case 'testEmail':
+                data = sendTestEmail();
                 break;
 
             default:
@@ -104,23 +116,38 @@ function handleRequest(e) {
 }
 
 
-function setupReminders() {
+function setupReminders(enable) {
     const triggers = ScriptApp.getProjectTriggers();
-    let exists = false;
 
     triggers.forEach(t => {
-        if (t.getHandlerFunction() === 'checkDeadlines') exists = true;
+        if (t.getHandlerFunction() === 'checkDeadlines') {
+            ScriptApp.deleteTrigger(t);
+        }
     });
 
-    if (!exists) {
+    if (enable) {
         ScriptApp.newTrigger('checkDeadlines')
             .timeBased()
             .everyDays(1)
             .atHour(8)
             .create();
-        return { success: true, message: 'Created daily trigger for 8am.' };
+        return { success: true, enabled: true, message: 'Created daily trigger for 8am.' };
     }
-    return { success: true, message: 'Trigger already exists.' };
+    return { success: true, enabled: false, message: 'Removed all triggers.' };
+}
+
+function hasTrigger() {
+    const triggers = ScriptApp.getProjectTriggers();
+    return triggers.some(t => t.getHandlerFunction() === 'checkDeadlines');
+}
+
+function sendTestEmail() {
+    const recipient = Session.getActiveUser().getEmail();
+    const subject = `🧪 Test Email - MSc Tracker Ready!`;
+    const body = `Success! Your reminder system is connected.\n\nYou will receive real alerts when deadlines are exactly 7, 3, or 1 day away.\n\n--\nMSc Application Tracker`;
+
+    MailApp.sendEmail(recipient, subject, body);
+    return { success: true, message: 'Sent to ' + recipient };
 }
 
 function checkDeadlines() {

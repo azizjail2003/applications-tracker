@@ -29,9 +29,15 @@
                 leave-to-class="opacity-0 translate-y-2"
              >
                 <div v-if="showTools" class="absolute right-0 mt-2 w-56 glass rounded-xl shadow-xl p-2 z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
-                    <button @click="enableReminders" class="w-full text-left px-3 py-3 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 flex items-center justify-between group">
-                        <span>Turn On Reminders</span>
-                        <span class="text-xs bg-brand-teal/10 text-brand-teal px-1.5 py-0.5 rounded group-hover:bg-brand-teal group-hover:text-white transition-colors">1-Click</span>
+                    <button @click="toggleReminders" class="w-full text-left px-3 py-3 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 flex items-center justify-between group">
+                        <span>{{ remindersEnabled ? 'Turn Off Reminders' : 'Turn On Reminders' }}</span>
+                        <span :class="remindersEnabled ? 'bg-rose-500/10 text-rose-500' : 'bg-brand-teal/10 text-brand-teal'" class="text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors uppercase">
+                            {{ remindersEnabled ? 'Live' : 'Off' }}
+                        </span>
+                    </button>
+                    <button v-if="remindersEnabled" @click="testReminders" class="w-full text-left px-3 py-2 text-sm text-brand-teal hover:bg-brand-teal/5 rounded-lg transition-colors flex items-center gap-2 mb-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        Send Test Email
                     </button>
                     <button @click="exportData" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors flex items-center gap-2">
                         <svg class="w-4 h-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
@@ -157,47 +163,40 @@ const filterMissing = ref('');
 const sortBy = ref('deadline');
 const fileInput = ref<HTMLInputElement | null>(null);
 const showTools = ref(false);
+const remindersEnabled = ref(false);
 
-onMounted(() => {
-  fetchAllData(); // Fetch full data for filters
-});
-
-// Compute missing items per app
-const appsWithMissing = computed(() => {
-   const map = new Map<string, string[]>();
-   
-   applications.value.forEach(app => {
-       const missing: string[] = [];
-       const items = checklistItems.value.filter(i => i.application_id === app.id);
-       
-       if (items.length === 0) {
-           // If no items, assume basic ones are missing? Or wait for seeding?
-           // Let's filter by seeded items that are 'missing'
-       } else {
-           items.forEach(i => {
-               if (i.state === 'missing') missing.push(i.item);
-           });
-       }
-       map.set(app.id, missing);
-   });
-   return map;
-});
-
-// Get unique missing items for filter
-const uniqueMissingItems = computed(() => {
-    const set = new Set<string>();
-    checklistItems.value.forEach(i => {
-        if (i.state === 'missing') set.add(i.item);
-    });
-    return Array.from(set).sort();
-});
-
-const enableReminders = async () => {
-    if (confirm('Enable daily 8AM email reminders for deadlines? This requires that you have updated your backend script.')) {
-        await api.post('enableReminders', {});
-        alert('Reminders enabled! You will get emails at 8AM for deadlines in 7, 3, and 1 days.');
-        showTools.value = false;
+const checkReminders = async () => {
+    try {
+        const res = await api.get('checkReminderStatus', {});
+        if (res.ok) remindersEnabled.value = !!res.data?.enabled;
+    } catch (e) {
+        console.error('Failed to check reminders');
     }
+};
+
+onMounted(async () => {
+  fetchAllData(); // Fetch full data for filters
+  checkReminders(); // Check reminder status
+});
+
+// ... (existing computed properties) ...
+
+const toggleReminders = async () => {
+    const action = remindersEnabled.value ? 'disableReminders' : 'enableReminders';
+    const msg = remindersEnabled.value 
+        ? 'Disable daily email reminders?' 
+        : 'Enable daily 8AM email reminders? This requires the latest Code.js in your Apps Script.';
+        
+    if (confirm(msg)) {
+        await api.post(action, {});
+        await checkReminders();
+        alert(remindersEnabled.value ? 'Reminders enabled!' : 'Reminders disabled.');
+    }
+};
+
+const testReminders = async () => {
+    await api.post('testEmail', {});
+    alert('Test email sent! Check your inbox (and spam folder).');
 };
 
 const getMissingForApp = (appId: string) => {
