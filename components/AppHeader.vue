@@ -24,14 +24,13 @@
         </div>
       </Transition>
       
-      <div class="flex items-center gap-6">
-        <!-- Navigation -->
+      <div class="flex items-center gap-4">
+        <!-- Navigation (Desktop) -->
         <nav class="hidden md:flex gap-1 bg-brand-dark/5 dark:bg-brand-light/5 rounded-full p-1">
           <NuxtLink 
             to="/" 
             class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-300"
             active-class="bg-brand-dark text-brand-light shadow-md dark:bg-brand-light dark:text-brand-dark"
-            class-active="opacity-100"
             :class="[
               $route.path === '/' ? '' : 'text-brand-dark/60 hover:text-brand-dark dark:text-brand-light/60 dark:hover:text-brand-light'
             ]"
@@ -50,7 +49,7 @@
           </NuxtLink>
         </nav>
 
-        <div class="flex items-center gap-3 pl-6 border-l border-brand-dark/10 dark:border-brand-light/10 h-8">
+        <div class="flex items-center gap-3 pl-0 md:pl-6 md:border-l border-brand-dark/10 dark:border-brand-light/10 h-8">
            <!-- Lang Switcher -->
            <button @click="toggleLang" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-brand-dark/10 dark:hover:bg-brand-light/10 transition-colors font-bold text-xs text-brand-dark dark:text-brand-light">
              {{ locale.toUpperCase() }}
@@ -70,9 +69,53 @@
            <button @click="shareAccount" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-brand-dark/10 dark:hover:bg-brand-light/10 transition-colors text-brand-dark/60 hover:text-brand-dark dark:text-brand-light/60 dark:hover:text-brand-light" title="Share Account">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
            </button>
+
+            <!-- Mobile Menu Toggle -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-brand-dark/10 dark:hover:bg-brand-light/10 transition-colors text-brand-dark dark:text-brand-light">
+                <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
         </div>
       </div>
     </div>
+    
+    <!-- Mobile Menu Overlay -->
+    <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-5"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-5"
+    >
+        <div v-if="mobileMenuOpen" class="md:hidden absolute top-16 left-0 right-0 bg-brand-light dark:bg-brand-dark border-b border-brand-dark/10 dark:border-brand-light/10 p-6 shadow-xl z-40">
+           <nav class="flex flex-col gap-4 text-center">
+              <NuxtLink 
+                to="/" 
+                @click="mobileMenuOpen = false"
+                class="text-lg font-bold py-2 border-b border-brand-dark/5 dark:border-brand-light/5 text-brand-dark dark:text-brand-light"
+              >
+                {{ t('nav.dashboard') }}
+              </NuxtLink>
+              <NuxtLink 
+                to="/applications" 
+                @click="mobileMenuOpen = false"
+                class="text-lg font-bold py-2 border-b border-brand-dark/5 dark:border-brand-light/5 text-brand-dark dark:text-brand-light"
+              >
+                {{ t('nav.applications') }}
+              </NuxtLink>
+              <div class="pt-2 text-xs text-brand-dark/40 dark:text-brand-light/40 uppercase font-bold tracking-widest">Settings</div>
+                <div class="flex justify-center gap-4">
+                    <button @click="toggleTheme" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-dark/5 dark:bg-brand-light/5 text-brand-dark dark:text-brand-light">
+                        <span class="text-xs font-bold">{{ isDark ? 'Light Mode' : 'Dark Mode' }}</span>
+                    </button>
+                    <button @click="toggleLang" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-dark/5 dark:bg-brand-light/5 text-brand-dark dark:text-brand-light">
+                        <span class="text-xs font-bold">{{ locale.toUpperCase() }}</span>
+                    </button>
+                </div>
+           </nav>
+        </div>
+    </Transition>
     <ShareModal v-model="shareModalOpen" :base-url="shareLink" />
   </header>
 </template>
@@ -87,6 +130,7 @@ const toggleLang = () => {
 };
 
 const shareModalOpen = ref(false);
+const mobileMenuOpen = ref(false);
 const shareLink = ref('');
 
 const shareAccount = () => {

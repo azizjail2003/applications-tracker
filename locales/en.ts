@@ -5,7 +5,9 @@ export default {
         setup: 'Setup',
     },
     dashboard: {
-        welcome: 'Welcome Back, Future MSc!',
+        welcome: 'Welcome Back, Future MSc!', // Deprecated
+        welcome_prefix: 'Welcome Back,',
+        default_name: 'Future MSc',
         subtitle: 'Your applications are moving forward. Keep pushing! 🚀',
         total_apps: 'Total Applications',
         in_progress: 'In Progress',
@@ -63,6 +65,16 @@ export default {
         launch: 'Launch App 🚀',
         config_loaded: 'Configuration loaded successfully! Redirecting...',
         config_loaded_from: 'Config loaded from {name}! Redirecting...',
+        invite_title: 'You\'ve been invited to MSc Tracker',
+        invite_title_name: '{name} invited you to MSc Tracker',
+        invite_desc: 'Manage your grad school applications like a pro. Track deadlines, documents, and recommenders all in one beautiful dashboard.',
+        feature_1_title: 'Deadlines',
+        feature_1_desc: 'Never miss a date with auto-calculated countdowns.',
+        feature_2_title: 'Checklists',
+        feature_2_desc: 'Smart templates for SOPs, transcripts, and more.',
+        feature_3_title: 'Privacy',
+        feature_3_desc: 'Your data lives in your own Google Sheet. 100% Secure.',
+        accept_invite: 'Accept & Configure',
     },
     loading: {
         title: 'Syncing Data...',

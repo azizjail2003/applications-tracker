@@ -16,5 +16,6 @@ const { initLocale } = useTranslation();
 onMounted(() => {
   initTheme();
   initLocale();
+  useUser().initUser();
 });
 </script>

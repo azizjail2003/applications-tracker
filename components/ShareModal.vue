@@ -31,7 +31,8 @@
             <div class="mb-4 text-left">
                 <label class="text-[10px] uppercase font-bold text-brand-light/40 mb-1 block pl-1">Your Name (Optional)</label>
                 <input 
-                    v-model="name" 
+                    :value="localName"
+                    @input="updateName(($event.target as HTMLInputElement).value)"
                     placeholder="e.g. Aziz" 
                     class="w-full bg-brand-light/5 border border-brand-light/10 rounded-xl px-4 py-2 text-sm text-brand-light placeholder-brand-light/30 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all"
                 />
@@ -79,23 +80,24 @@ const props = defineProps<{
 
 defineEmits(['update:modelValue']);
 
-const name = ref('');
+const { userName, setUserName } = useUser();
+// Local ref for the input in this modal to allow temporary editing without committing global immediately, or sync directly?
+// Syncing directly is cleaner for "personalized dashboard" feel.
+const localName = ref(userName.value);
+
+watch(userName, (val) => localName.value = val);
+
+const updateName = (val: string) => {
+    localName.value = val;
+    setUserName(val);
+};
+
 const copied = ref(false);
-
-// Initialize name from localStorage check if possible, or leave empty
-onMounted(() => {
-    name.value = localStorage.getItem('msc_user_name') || '';
-});
-
-// Update localStorage when name changes
-watch(name, (val) => {
-    localStorage.setItem('msc_user_name', val);
-});
 
 const finalLink = computed(() => {
     let url = `${window.location.origin}/setup?import=${encodeURIComponent(props.baseUrl)}`;
-    if (name.value.trim()) {
-        url += `&name=${encodeURIComponent(name.value.trim())}`;
+    if (localName.value.trim()) {
+        url += `&name=${encodeURIComponent(localName.value.trim())}`;
     }
     return url;
 });

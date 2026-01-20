@@ -4,7 +4,30 @@
     <div class="container mx-auto px-6 py-8 max-w-6xl">
       <!-- Welcome Section -->
       <div class="mb-10 text-center md:text-left">
-        <h1 class="text-4xl md:text-5xl font-bold dark:text-brand-light text-brand-dark mb-3 tracking-tight">{{ t('dashboard.welcome') }}</h1>
+        <h1 class="text-4xl md:text-5xl font-bold dark:text-brand-light text-brand-dark mb-3 tracking-tight flex flex-col md:flex-row items-center gap-2 justify-center md:justify-start">
+           <span>{{ t('dashboard.welcome_prefix') }}</span>
+           <div class="relative group">
+              <span 
+                v-if="!editingName" 
+                @click="startEditing"
+                class="text-brand-teal cursor-pointer hover:underline decoration-dashed decoration-2 underline-offset-4"
+                title="Click to edit name"
+              >
+                {{ userName || t('dashboard.default_name') }}
+              </span>
+              <input 
+                v-else
+                ref="nameInput"
+                v-model="userName"
+                @blur="stopEditing"
+                @keyup.enter="stopEditing"
+                class="bg-transparent border-b-2 border-brand-teal text-brand-teal focus:outline-none w-48 text-center md:text-left"
+                placeholder="Your Name"
+              />
+              <svg v-if="!editingName" class="w-4 h-4 text-brand-teal/50 absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+           </div>
+           <span>!</span>
+        </h1>
         <p class="text-lg dark:text-brand-light/60 text-brand-dark/60 font-light max-w-2xl">{{ t('dashboard.subtitle') }}</p>
       </div>
 
@@ -70,6 +93,21 @@
 <script setup lang="ts">
 const { applications, fetchAll } = useApplications();
 const { t } = useTranslation();
+const { userName, setUserName } = useUser();
+
+const editingName = ref(false);
+const nameInput = ref<HTMLInputElement | null>(null);
+
+const startEditing = async () => {
+  editingName.value = true;
+  await nextTick();
+  nameInput.value?.focus();
+};
+
+const stopEditing = () => {
+  editingName.value = false;
+  setUserName(userName.value); // Persist
+};
 
 onMounted(() => {
   fetchAll();

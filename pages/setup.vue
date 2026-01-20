@@ -14,8 +14,53 @@
         </p>
       </div>
 
-      <!-- Main Config Glass Card -->
-      <div class="glass p-10 rounded-[2.5rem] shadow-2xl border border-brand-dark/10 dark:border-brand-light/10 mb-12 relative overflow-hidden">
+      <!-- Invite Landing Card -->
+      <div v-if="showInvite" class="glass p-10 rounded-[2.5rem] shadow-2xl border border-brand-dark/10 dark:border-brand-light/10 mb-12 relative overflow-hidden text-center">
+         <div class="absolute inset-0 bg-gradient-to-br from-brand-teal/10 to-transparent pointer-events-none"></div>
+         
+         <div class="relative z-10 flex flex-col items-center">
+            <div class="w-20 h-20 rounded-full bg-brand-teal/20 flex items-center justify-center mb-6 text-4xl shadow-inner">
+               👋
+            </div>
+            
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-brand-dark dark:text-brand-light">
+               {{ inviteName ? t('setup.invite_title_name', { name: inviteName }) : t('setup.invite_title') }}
+            </h2>
+            <p class="text-lg text-brand-dark/60 dark:text-brand-light/60 max-w-xl mx-auto mb-10 leading-relaxed">
+               {{ t('setup.invite_desc') }}
+            </p>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3xl mb-12 text-left">
+               <div class="p-4 rounded-2xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5">
+                  <div class="text-2xl mb-2">📅</div>
+                  <h3 class="font-bold text-brand-dark dark:text-brand-light mb-1">{{ t('setup.feature_1_title') }}</h3>
+                  <p class="text-xs text-brand-dark/60 dark:text-brand-light/60">{{ t('setup.feature_1_desc') }}</p>
+               </div>
+               <div class="p-4 rounded-2xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5">
+                  <div class="text-2xl mb-2">✅</div>
+                  <h3 class="font-bold text-brand-dark dark:text-brand-light mb-1">{{ t('setup.feature_2_title') }}</h3>
+                  <p class="text-xs text-brand-dark/60 dark:text-brand-light/60">{{ t('setup.feature_2_desc') }}</p>
+               </div>
+               <div class="p-4 rounded-2xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5">
+                  <div class="text-2xl mb-2">🚀</div>
+                  <h3 class="font-bold text-brand-dark dark:text-brand-light mb-1">{{ t('setup.feature_3_title') }}</h3>
+                  <p class="text-xs text-brand-dark/60 dark:text-brand-light/60">{{ t('setup.feature_3_desc') }}</p>
+               </div>
+            </div>
+
+            <button 
+               @click="acceptInvite" 
+               class="px-10 py-4 bg-brand-teal text-white font-bold rounded-2xl shadow-xl shadow-brand-teal/20 hover:bg-brand-dark dark:hover:bg-brand-light dark:hover:text-brand-dark transition-all transform hover:-translate-y-1 active:translate-y-0 text-lg flex items-center gap-3"
+            >
+               <span>{{ t('setup.accept_invite') }}</span>
+               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </button>
+         </div>
+      </div>
+
+      <!-- Main Config Glass Card (Hidden if Invite) -->
+      <div v-else class="glass p-10 rounded-[2.5rem] shadow-2xl border border-brand-dark/10 dark:border-brand-light/10 mb-12 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-brand-teal/5 to-transparent pointer-events-none"></div>
         
         <div class="relative z-10">
@@ -145,36 +190,41 @@ const copied = ref(false);
 const error = ref('');
 const importSuccess = ref(false);
 const successMessage = ref('');
+const showInvite = ref(false);
+const inviteName = ref('');
+const pendingImportUrl = ref('');
 const route = useRoute();
 const router = useRouter();
 
 onMounted(() => {
    // Check for magic link import
    const importUrl = route.query.import as string;
-   if (importUrl) {
-       apiUrl.value = importUrl;
-       // Optional: Auto-save if it looks valid to streamline the UX
-       if (importUrl.startsWith('https://script.google.com/') && importUrl.endsWith('/exec')) {
-            localStorage.setItem('msc_tracker_api_url', importUrl);
-            
-            // Check for name param
-            const nameParam = route.query.name as string;
-            
-            // Show premium success overlay
-            importSuccess.value = true;
-            successMessage.value = nameParam 
-                ? t('setup.config_loaded_from', { name: nameParam }) 
-                : t('setup.config_loaded');
-            
-            setTimeout(() => {
-                router.push('/');
-            }, 2500);
-       }
+   if (importUrl && importUrl.startsWith('https://script.google.com/') && importUrl.endsWith('/exec')) {
+       // Pause and show invite screen
+       pendingImportUrl.value = importUrl;
+       inviteName.value = (route.query.name as string) || '';
+       showInvite.value = true;
    } else {
-       // Try to pre-fill from localStorage if available, or fallback to config
+       // Normal flow: Try to pre-fill from localStorage if available, or fallback to config
        apiUrl.value = localStorage.getItem('msc_tracker_api_url') || config.public.apiBase || '';
    }
 });
+
+const acceptInvite = () => {
+    // Proceed with import
+    apiUrl.value = pendingImportUrl.value;
+    localStorage.setItem('msc_tracker_api_url', pendingImportUrl.value);
+            
+    // Show premium success overlay
+    importSuccess.value = true;
+    successMessage.value = inviteName.value 
+        ? t('setup.config_loaded_from', { name: inviteName.value }) 
+        : t('setup.config_loaded');
+    
+    setTimeout(() => {
+        router.push('/');
+    }, 2500);
+};
 
 // Validate URL format simply
 const isValidUrl = computed(() => {
