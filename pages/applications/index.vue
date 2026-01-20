@@ -13,6 +13,7 @@
                 <span>Data Tools</span>
              </button>
              <div class="absolute right-0 mt-2 w-48 glass rounded-xl shadow-xl p-2 hidden group-hover:block z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
+                <button @click="enableReminders" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 pb-1">Using Daily Reminders 🔔</button>
                 <button @click="exportData" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.export') }}</button>
                 <button @click="fileInput?.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.import') }}</button>
              </div>
