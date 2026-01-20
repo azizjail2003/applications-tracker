@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppHeader />
+
     <div class="container mx-auto px-6 py-8 max-w-6xl">
       <!-- Welcome Section -->
       <div class="mb-10 text-center md:text-left">

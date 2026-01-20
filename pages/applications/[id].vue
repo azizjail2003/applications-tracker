@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppHeader />
+
     <div class="container mx-auto px-6 py-8 max-w-5xl" v-if="app">
       <!-- Top Action Bar -->
       <div class="flex justify-between items-center mb-8">
