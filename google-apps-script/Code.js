@@ -149,9 +149,14 @@ function hasTrigger() {
 }
 
 function sendTestEmail() {
-    const recipient = Session.getActiveUser().getEmail();
+    // getEffectiveUser() is more reliable for personal web apps
+    const recipient = Session.getEffectiveUser().getEmail();
     const subject = `🧪 Test Email - MSc Tracker Ready!`;
     const body = `Success! Your reminder system is connected.\n\nYou will receive real alerts when deadlines are exactly 7, 3, or 1 day away.\n\n--\nMSc Application Tracker`;
+
+    if (!recipient) {
+        throw new Error("Could not detect your email. Please run this function once manually in the script editor to authorize it.");
+    }
 
     MailApp.sendEmail(recipient, subject, body);
     return { success: true, message: 'Sent to ' + recipient };
@@ -172,7 +177,7 @@ function checkDeadlines() {
         deadline.setHours(0, 0, 0, 0);
 
         const diffTime = deadline.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24)); // Use ceil to be safer with timezones
+        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
 
         if (diffDays === 7 || diffDays === 3 || diffDays === 1) {
             alerts.push(`📅 ${diffDays} days left: ${app.university} - ${app.program} (Due: ${new Date(app.deadline_app).toLocaleDateString()})`);
@@ -180,11 +185,15 @@ function checkDeadlines() {
     });
 
     if (alerts.length > 0) {
-        const recipient = Session.getActiveUser().getEmail();
+        const recipient = Session.getEffectiveUser().getEmail();
         const subject = `⚠️ ${alerts.length} Upcoming Deadlines - MSc Tracker`;
         const body = `You have upcoming deadlines:\n\n${alerts.join('\n')}\n\nGood luck!\n\n--\nMSc Application Tracker`;
 
-        MailApp.sendEmail(recipient, subject, body);
+        if (recipient) {
+            MailApp.sendEmail(recipient, subject, body);
+        } else {
+            console.error("No recipient found for checkDeadlines");
+        }
     }
 }
 

@@ -35,7 +35,12 @@ export const useApi = () => {
         }
 
         try {
-            const finalUrl = method === 'GET' ? `${url}?${new URLSearchParams({ action, ...data })}` : url;
+            // Fix: Include 'action' in URL query string for both GET and POST.
+            // This is a known workaround for GAS redirects to handle CORS more reliably.
+            const urlWithAction = `${url}?action=${action}`;
+            const finalUrl = method === 'GET' && Object.keys(data || {}).length > 0
+                ? `${urlWithAction}&${new URLSearchParams(data)}`
+                : urlWithAction;
 
             const response = await fetch(finalUrl, options);
 
