@@ -179,7 +179,34 @@ onMounted(async () => {
   checkReminders(); // Check reminder status
 });
 
-// ... (existing computed properties) ...
+// Compute missing items per app
+const appsWithMissing = computed(() => {
+   const map = new Map<string, string[]>();
+   
+   applications.value.forEach(app => {
+       const missing: string[] = [];
+       const items = checklistItems.value.filter(i => i.application_id === app.id);
+       
+       if (items.length === 0) {
+           // If no items, assume basic ones are missing
+       } else {
+           items.forEach(i => {
+               if (i.state === 'missing') missing.push(i.item);
+           });
+       }
+       map.set(app.id, missing);
+   });
+   return map;
+});
+
+// Get unique missing items for filter
+const uniqueMissingItems = computed(() => {
+    const set = new Set<string>();
+    checklistItems.value.forEach(i => {
+        if (i.state === 'missing') set.add(i.item);
+    });
+    return Array.from(set).sort();
+});
 
 const toggleReminders = async () => {
     const action = remindersEnabled.value ? 'disableReminders' : 'enableReminders';
@@ -191,6 +218,7 @@ const toggleReminders = async () => {
         await api.post(action, {});
         await checkReminders();
         alert(remindersEnabled.value ? 'Reminders enabled!' : 'Reminders disabled.');
+        showTools.value = false;
     }
 };
 
