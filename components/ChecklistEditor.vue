@@ -132,7 +132,7 @@ const save = async (item: ChecklistItem) => {
 const cycleState = async (item: ChecklistItem) => {
   const states: ChecklistState[] = ['missing', 'ready', 'uploaded', 'not_required'];
   const idx = states.indexOf(item.state);
-  item.state = states[(idx + 1) % states.length];
+  item.state = states[(idx + 1) % states.length] as ChecklistState;
   await upsertChecklistItem(item);
 };
 

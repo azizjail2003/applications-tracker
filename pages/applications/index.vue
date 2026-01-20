@@ -14,7 +14,7 @@
              </button>
              <div class="absolute right-0 mt-2 w-48 glass rounded-xl shadow-xl p-2 hidden group-hover:block z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
                 <button @click="exportData" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.export') }}</button>
-                <button @click="$refs.fileInput.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.import') }}</button>
+                <button @click="fileInput?.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.import') }}</button>
              </div>
           </div>
           <button @click="createNew" class="px-5 py-2 bg-brand-teal text-white rounded-xl font-bold hover:bg-brand-dark transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
@@ -114,8 +114,7 @@ const api = useApi();
 const search = ref('');
 const filterStatus = ref('');
 const sortBy = ref('deadline');
-// @ts-ignore
-const fileInput = ref(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
   fetchAll();

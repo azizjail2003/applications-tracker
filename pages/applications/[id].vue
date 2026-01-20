@@ -146,7 +146,7 @@ const route = useRoute();
 const router = useRouter();
 const { t } = useTranslation();
 const { applications, fetchDetails, upsertApplication, deleteApplication, seedTemplate, recalculateProgress, loading } = useApplications();
-const { formatDate } = useDate();
+const { formatDate, toValueDate } = useDate();
 
 const appId = route.params.id as string;
 
@@ -163,12 +163,12 @@ const app = computed(() => applications.value.find(a => a.id === appId));
 
 const deadlineAppInput = computed({
     get: () => toValueDate(app.value?.deadline_app),
-    set: (val) => { if (app.value) app.value.deadline_app = val; }
+    set: (val) => { if (app.value) app.value.deadline_app = val || ''; }
 });
 
 const deadlineScholarshipInput = computed({
     get: () => toValueDate(app.value?.deadline_scholarship),
-    set: (val) => { if (app.value) app.value.deadline_scholarship = val; }
+    set: (val) => { if (app.value) app.value.deadline_scholarship = val || ''; }
 });
 
 const autoSave = async () => {
