@@ -29,8 +29,15 @@
                 leave-to-class="opacity-0 translate-y-2"
              >
                 <div v-if="showTools" class="absolute right-0 mt-2 w-56 glass rounded-xl shadow-xl p-2 z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
-                    <button @click="toggleReminders" class="w-full text-left px-3 py-3 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 flex items-center justify-between group">
-                        <span>{{ remindersEnabled ? 'Turn Off Reminders' : 'Turn On Reminders' }}</span>
+                    <button 
+                        @click="toggleReminders" 
+                        :disabled="isReminderLoading"
+                        class="w-full text-left px-3 py-3 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 flex items-center justify-between group disabled:opacity-50"
+                    >
+                        <div class="flex items-center gap-2">
+                            <span v-if="isReminderLoading" class="w-3 h-3 border-2 border-brand-teal border-t-transparent rounded-full animate-spin"></span>
+                            <span>{{ remindersEnabled ? 'Turn Off Reminders' : 'Turn On Reminders' }}</span>
+                        </div>
                         <span :class="remindersEnabled ? 'bg-rose-500/10 text-rose-500' : 'bg-brand-teal/10 text-brand-teal'" class="text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors uppercase">
                             {{ remindersEnabled ? 'Live' : 'Off' }}
                         </span>
@@ -154,6 +161,7 @@ const { applications, checklistItems, recommenders, fetchAll, fetchAllData, upse
 const { t } = useTranslation();
 const { formatDate } = useDate();
 const { isReadOnly } = useReadOnly();
+const { ask, notify } = useConfirm();
 const router = useRouter();
 const api = useApi();
 
@@ -164,6 +172,7 @@ const sortBy = ref('deadline');
 const fileInput = ref<HTMLInputElement | null>(null);
 const showTools = ref(false);
 const remindersEnabled = ref(false);
+const isReminderLoading = ref(false);
 
 const checkReminders = async () => {
     try {
@@ -214,17 +223,34 @@ const toggleReminders = async () => {
         ? 'Disable daily email reminders?' 
         : 'Enable daily 8AM email reminders?\n\nNOTE: If this is your first time, Google will ask you to "Authorize" the script. You must accept to allow the script to send emails to you.';
         
-    if (confirm(msg)) {
-        await api.post(action, {});
-        await checkReminders();
-        alert(remindersEnabled.value ? 'Reminders enabled!' : 'Reminders disabled.');
+    if (await ask(msg, remindersEnabled.value ? 'Disable Reminders' : 'Enable Reminders')) {
+        isReminderLoading.value = true;
         showTools.value = false;
+        try {
+            await api.post(action, {});
+            // Wait for 1.2s to ensure Google Trigger propagates
+            await new Promise(r => setTimeout(r, 1200));
+            await checkReminders();
+            
+            if (remindersEnabled.value === (action === 'enableReminders')) {
+                notify(
+                    remindersEnabled.value ? 'Daily reminders are now active!' : 'Daily reminders have been disabled.',
+                    remindersEnabled.value ? 'Reminders Live' : 'Reminders Stopped',
+                    remindersEnabled.value ? 'success' : 'info'
+                );
+            } else {
+                // Should not happen, but if synchronization fails
+                notify('Setting updated but check returned inconsistent result. Please refresh.', 'Sync Warning', 'error');
+            }
+        } finally {
+            isReminderLoading.value = false;
+        }
     }
 };
 
 const testReminders = async () => {
     await api.post('testEmail', {});
-    alert('Test email sent! Check your inbox (and spam folder).');
+    notify('Test email sent! Check your inbox (and spam folder).', 'Test Successful', 'success');
 };
 
 const getMissingForApp = (appId: string) => {
@@ -254,13 +280,13 @@ const importData = async (event: Event) => {
    reader.onload = async (e) => {
       try {
          const json = JSON.parse(e.target?.result as string);
-         if (confirm(`Import ${json.applications?.length || 0} applications, ${json.checklist?.length || 0} items? This puts them in the database.`)) {
+         if (await ask(`Import ${json.applications?.length || 0} applications, ${json.checklist?.length || 0} items?\n\nThis will merge them into your current database.`)) {
              await api.post('bulkUpsert', json);
-             alert('Import started. It may take a moment to sync. Please refresh shortly.');
+             notify('Import started. It may take a moment to sync. Please refresh shortly.', 'Importing Data', 'success');
              await fetchAllData();
          }
       } catch (err) {
-         alert('Invalid JSON file');
+         notify('Invalid JSON file format. Please check your export file.', 'Import Error', 'error');
       }
    };
    reader.readAsText(file);

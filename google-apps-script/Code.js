@@ -117,6 +117,9 @@ function handleRequest(e) {
 
 
 function setupReminders(enable) {
+    if (SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') {
+        throw new Error('Please set your SHEET_ID in the script first.');
+    }
     const triggers = ScriptApp.getProjectTriggers();
 
     triggers.forEach(t => {
@@ -131,14 +134,18 @@ function setupReminders(enable) {
             .everyDays(1)
             .atHour(8)
             .create();
-        return { success: true, enabled: true, message: 'Created daily trigger for 8am.' };
+        return { success: true, enabled: true, message: 'Daily reminder trigger created for 8:00 AM.' };
     }
-    return { success: true, enabled: false, message: 'Removed all triggers.' };
+    return { success: true, enabled: false, message: 'All reminder triggers removed.' };
 }
 
 function hasTrigger() {
-    const triggers = ScriptApp.getProjectTriggers();
-    return triggers.some(t => t.getHandlerFunction() === 'checkDeadlines');
+    try {
+        const triggers = ScriptApp.getProjectTriggers();
+        return triggers.some(t => t.getHandlerFunction() === 'checkDeadlines');
+    } catch (e) {
+        return false;
+    }
 }
 
 function sendTestEmail() {
