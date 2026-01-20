@@ -1,4 +1,4 @@
-export type ApplicationStatus = 'Draft' | 'In progress' | 'Submitted' | 'Interview' | 'Accepted' | 'Rejected';
+export type ApplicationStatus = 'Draft' | 'In progress' | 'Submitted' | 'Interview' | 'Accepted' | 'Rejected' | 'Waitlist' | 'Withdrawn';
 
 export interface Application {
     id: string;

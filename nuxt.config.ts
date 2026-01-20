@@ -3,11 +3,39 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots', '@vite-pwa/nuxt'],
 
   site: {
     url: 'https://applications-tracker.vercel.app',
     name: 'MSc Applications Tracker',
+  },
+
+  pwa: {
+    manifest: {
+      name: 'MSc Applications Tracker',
+      short_name: 'MSc Tracker',
+      description: 'Track your Master\'s degree applications, deadlines, and recommenders.',
+      theme_color: '#0d9488',
+      icons: [
+        {
+          src: 'pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      navigateFallback: '/',
+    },
+    devOptions: {
+      enabled: true,
+      type: 'module',
+    },
   },
 
   runtimeConfig: {

@@ -99,6 +99,43 @@ function handleRequest(e) {
     }
 }
 
+// ... handleRequest implementation ...
+
+function checkDeadlines() {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const applications = getSheetData(ss, 'applications');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const alerts = [];
+
+    applications.forEach(app => {
+        if (!app.app_deadline) return;
+
+        const deadline = new Date(app.app_deadline);
+        deadline.setHours(0, 0, 0, 0);
+
+        const diffTime = deadline.getTime() - today.getTime();
+        const diffDays = diffTime / (1000 * 3600 * 24);
+
+        if (diffDays === 7 || diffDays === 3 || diffDays === 1) {
+            alerts.push(`📅 ${diffDays} days left: ${app.university} - ${app.program} (Due: ${app.app_deadline})`);
+        }
+    });
+
+    if (alerts.length > 0) {
+        const recipient = Session.getActiveUser().getEmail();
+        const subject = `⚠️ ${alerts.length} Upcoming Deadlines - MSc Tracker`;
+        const body = `You have upcoming deadlines:\n\n${alerts.join('\n')}\n\nGood luck!\n\n--\nMSc Application Tracker`;
+
+        MailApp.sendEmail(recipient, subject, body);
+        console.log(`Sent email to ${recipient} with ${alerts.length} alerts.`);
+    } else {
+        console.log("No deadlines found for today.");
+    }
+}
+
+
 // Helpers
 
 function getSheetData(ss, sheetName) {
