@@ -9,5 +9,17 @@ export const useDate = () => {
         return new Intl.DateTimeFormat(locale.value, options).format(d);
     };
 
-    return { formatDate };
+    const toValueDate = (date: string | undefined | null) => {
+        if (!date) return '';
+        // If it's already YYYY-MM-DD, return it
+        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return '';
+
+        // Return YYYY-MM-DD safely
+        return d.toISOString().split('T')[0];
+    };
+
+    return { formatDate, toValueDate };
 };

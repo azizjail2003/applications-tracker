@@ -64,11 +64,11 @@
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.app_deadline') }}</label>
-                  <input type="date" v-model="app.deadline_app" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input type="date" v-model="deadlineAppInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.scholarship_deadline') }}</label>
-                  <input type="date" v-model="app.deadline_scholarship" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input type="date" v-model="deadlineScholarshipInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
                </div>
             </div>
             
@@ -160,6 +160,16 @@ onMounted(async () => {
 });
 
 const app = computed(() => applications.value.find(a => a.id === appId));
+
+const deadlineAppInput = computed({
+    get: () => toValueDate(app.value?.deadline_app),
+    set: (val) => { if (app.value) app.value.deadline_app = val; }
+});
+
+const deadlineScholarshipInput = computed({
+    get: () => toValueDate(app.value?.deadline_scholarship),
+    set: (val) => { if (app.value) app.value.deadline_scholarship = val; }
+});
 
 const autoSave = async () => {
     if (app.value) {

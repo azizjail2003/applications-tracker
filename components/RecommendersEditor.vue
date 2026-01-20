@@ -51,7 +51,8 @@
            <span class="text-[10px] text-gray-500 uppercase font-bold">Last Nudge:</span>
            <input 
              type="date" 
-             v-model="item.last_nudge_date" 
+             :value="toValueDate(item.last_nudge_date)" 
+             @input="item.last_nudge_date = ($event.target as HTMLInputElement).value"
              @blur="save(item)"
              class="text-xs text-indigo-300 border-none bg-transparent p-0 focus:ring-0 w-24 text-right [color-scheme:dark]"
            />
@@ -70,6 +71,7 @@ const props = defineProps<{
 
 const { recommenders, upsertRecommender, deleteRecommender } = useApplications();
 const { ask } = useConfirm();
+const { toValueDate } = useDate();
 const items = computed(() => recommenders.value.filter(r => r.application_id === props.appId));
 
 const add = async () => {
