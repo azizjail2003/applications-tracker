@@ -107,20 +107,35 @@
                   <li>
                      <strong>Copy these exact headers into Row 1 of each sheet:</strong>
                      <ul class="mt-2 space-y-4 pl-2 border-l-2 border-brand-teal/20">
-                        <li>
-                           <span class="font-bold text-brand-teal">applications</span>:
-                           <div class="relative group">
-                              <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors" title="Click to select all">id	university	program	country	status	deadline_app	deadline_scholarship	portal_apply_url	portal_status_url	progress	priority	notes	updated_at</pre>
-                              <div class="text-[9px] text-brand-dark/40 dark:text-brand-light/40 mt-1">Tip: Triple-click to select row, then Copy & Paste into Sheet A1</div>
+                        <li class="space-y-3">
+                           <div class="flex items-center justify-between">
+                              <span class="font-bold text-brand-teal">applications</span>
+                              <button @click="copyHeader('applications')" class="text-[10px] bg-brand-teal/20 hover:bg-brand-teal hover:text-white text-brand-teal px-2 py-1 rounded-lg transition-all flex items-center gap-1 font-bold">
+                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2" /></svg>
+                                 Copy Header
+                              </button>
                            </div>
+                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	university	program	country	status	deadline_app	deadline_scholarship	portal_apply_url	portal_status_url	progress	priority	notes	updated_at</pre>
                         </li>
-                        <li>
-                           <span class="font-bold text-brand-teal">checklist</span>:
-                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	item	state	link	updated_at</pre>
+                        <li class="space-y-3">
+                           <div class="flex items-center justify-between">
+                              <span class="font-bold text-brand-teal">checklist</span>
+                              <button @click="copyHeader('checklist')" class="text-[10px] bg-brand-teal/20 hover:bg-brand-teal hover:text-white text-brand-teal px-2 py-1 rounded-lg transition-all flex items-center gap-1 font-bold">
+                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2" /></svg>
+                                 Copy Header
+                              </button>
+                           </div>
+                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	item	state	link	updated_at</pre>
                         </li>
-                        <li>
-                           <span class="font-bold text-brand-teal">recommenders</span>:
-                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	name	email	state	last_nudge_date	updated_at</pre>
+                        <li class="space-y-3">
+                           <div class="flex items-center justify-between">
+                              <span class="font-bold text-brand-teal">recommenders</span>
+                              <button @click="copyHeader('recommenders')" class="text-[10px] bg-brand-teal/20 hover:bg-brand-teal hover:text-white text-brand-teal px-2 py-1 rounded-lg transition-all flex items-center gap-1 font-bold">
+                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2" /></svg>
+                                 Copy Header
+                              </button>
+                           </div>
+                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	name	email	state	last_nudge_date	updated_at</pre>
                         </li>
                      </ul>
                   </li>
@@ -221,6 +236,18 @@ const inviteName = ref('');
 const pendingImportUrl = ref('');
 const route = useRoute();
 const router = useRouter();
+const { notify } = useConfirm();
+
+const headers = {
+    applications: "id\tuniversity\tprogram\tcountry\tstatus\tdeadline_app\tdeadline_scholarship\tportal_apply_url\tportal_status_url\tprogress\tpriority\tnotes\tupdated_at",
+    checklist: "id\tapplication_id\titem\tstate\tlink\tupdated_at",
+    recommenders: "id\tapplication_id\tname\temail\tstate\tlast_nudge_date\tupdated_at"
+};
+
+const copyHeader = (key: keyof typeof headers) => {
+    navigator.clipboard.writeText(headers[key]);
+    notify(t('setup.header_copied', { name: key }), 'Copied', 'success');
+};
 
 onMounted(() => {
    // Check for magic link import
