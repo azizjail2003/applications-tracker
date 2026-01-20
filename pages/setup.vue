@@ -128,7 +128,7 @@
            </div>
            
            <h2 class="text-4xl font-bold text-white mb-4 tracking-tight">
-             {{ t('setup.config_loaded') }}
+             {{ successMessage }}
            </h2>
            <p class="text-brand-light/60 text-lg">Connecting to your personal database...</p>
         </div>
@@ -144,6 +144,7 @@ const apiUrl = ref('');
 const copied = ref(false);
 const error = ref('');
 const importSuccess = ref(false);
+const successMessage = ref('');
 const route = useRoute();
 const router = useRouter();
 
@@ -156,12 +157,18 @@ onMounted(() => {
        if (importUrl.startsWith('https://script.google.com/') && importUrl.endsWith('/exec')) {
             localStorage.setItem('msc_tracker_api_url', importUrl);
             
+            // Check for name param
+            const nameParam = route.query.name as string;
+            
             // Show premium success overlay
             importSuccess.value = true;
+            successMessage.value = nameParam 
+                ? t('setup.config_loaded_from', { name: nameParam }) 
+                : t('setup.config_loaded');
             
             setTimeout(() => {
                 router.push('/');
-            }, 2000);
+            }, 2500);
        }
    } else {
        // Try to pre-fill from localStorage if available, or fallback to config

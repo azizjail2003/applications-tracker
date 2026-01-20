@@ -27,12 +27,22 @@
             <h3 class="text-2xl font-bold text-brand-light mb-2 tracking-tight">Share Access</h3>
             <p class="text-brand-light/70 text-sm mb-6 max-w-xs mx-auto">Send this magic link to anyone you want to share your tracker database with.</p>
 
+            <!-- Name Input -->
+            <div class="mb-4 text-left">
+                <label class="text-[10px] uppercase font-bold text-brand-light/40 mb-1 block pl-1">Your Name (Optional)</label>
+                <input 
+                    v-model="name" 
+                    placeholder="e.g. Aziz" 
+                    class="w-full bg-brand-light/5 border border-brand-light/10 rounded-xl px-4 py-2 text-sm text-brand-light placeholder-brand-light/30 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all"
+                />
+            </div>
+
             <!-- Link Input -->
             <div class="relative group mb-6">
                 <div class="absolute inset-0 bg-brand-teal/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="relative flex items-center gap-2 p-1.5 bg-brand-light/5 border border-brand-light/10 rounded-xl">
                     <input 
-                        :value="link" 
+                        :value="finalLink" 
                         readonly 
                         class="w-full bg-transparent border-none text-xs text-brand-light/60 font-mono px-3 focus:ring-0 truncate"
                         @click="selectInput"
@@ -64,16 +74,35 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: boolean;
-  link: string;
+  baseUrl: string;
 }>();
 
 defineEmits(['update:modelValue']);
 
+const name = ref('');
 const copied = ref(false);
+
+// Initialize name from localStorage check if possible, or leave empty
+onMounted(() => {
+    name.value = localStorage.getItem('msc_user_name') || '';
+});
+
+// Update localStorage when name changes
+watch(name, (val) => {
+    localStorage.setItem('msc_user_name', val);
+});
+
+const finalLink = computed(() => {
+    let url = `${window.location.origin}/setup?import=${encodeURIComponent(props.baseUrl)}`;
+    if (name.value.trim()) {
+        url += `&name=${encodeURIComponent(name.value.trim())}`;
+    }
+    return url;
+});
 
 const copy = async () => {
     try {
-        await navigator.clipboard.writeText(props.link);
+        await navigator.clipboard.writeText(finalLink.value);
         copied.value = true;
         setTimeout(() => copied.value = false, 2000);
     } catch (err) {

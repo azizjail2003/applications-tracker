@@ -9,7 +9,7 @@ export const useTranslation = () => {
         fr
     };
 
-    const t = (key: string) => {
+    const t = (key: string, params?: Record<string, string>) => {
         const keys = key.split('.');
         let value = messages[locale.value];
 
@@ -18,6 +18,13 @@ export const useTranslation = () => {
                 value = value[k];
             } else {
                 return key; // Fallback to key if missing
+            }
+        }
+
+        // Interpolate params
+        if (params && typeof value === 'string') {
+            for (const [k, v] of Object.entries(params)) {
+                value = value.replace(`{${k}}`, v);
             }
         }
 

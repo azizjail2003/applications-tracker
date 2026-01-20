@@ -73,7 +73,7 @@
         </div>
       </div>
     </div>
-    <ShareModal v-model="shareModalOpen" :link="shareLink" />
+    <ShareModal v-model="shareModalOpen" :base-url="shareLink" />
   </header>
 </template>
 
@@ -96,8 +96,8 @@ const shareAccount = () => {
         return;
     }
     
-    // Generate link
-    shareLink.value = `${window.location.origin}/setup?import=${encodeURIComponent(apiUrl)}`;
+    // Pass raw API URL, let Modal handle link generation
+    shareLink.value = apiUrl;
     shareModalOpen.value = true;
 };
 </script>

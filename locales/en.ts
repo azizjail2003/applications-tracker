@@ -62,6 +62,7 @@ export default {
         enter_url: 'Enter Web App URL',
         launch: 'Launch App 🚀',
         config_loaded: 'Configuration loaded successfully! Redirecting...',
+        config_loaded_from: 'Config loaded from {name}! Redirecting...',
     },
     loading: {
         title: 'Syncing Data...',
