@@ -55,7 +55,7 @@ export const useApplications = () => {
             applications.value.push({ ...app, updated_at: new Date().toISOString() });
         }
 
-        const res = await api.post<Application>('upsertApplication', { data: app });
+        const res = await api.post<Application>('upsertApplication', app);
         // Revert or update with server response if needed
         if (res) {
             // update with validated data
@@ -142,7 +142,7 @@ export const useApplications = () => {
         // Learn
         addKnownItem(item.item, item.link || '');
 
-        await api.post('upsertChecklistItem', { data: item });
+        await api.post('upsertChecklistItem', item);
         saving.value = false;
     };
 
@@ -160,7 +160,7 @@ export const useApplications = () => {
         if (index >= 0) recommenders.value[index] = newRec;
         else recommenders.value.push(newRec);
 
-        await api.post('upsertRecommender', { data: rec });
+        await api.post('upsertRecommender', rec);
         saving.value = false;
     };
 
