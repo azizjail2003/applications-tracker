@@ -77,7 +77,7 @@
            <div class="space-y-3 relative z-10">
              <div class="flex justify-between text-xs">
                 <span class="text-brand-dark/60 dark:text-brand-light/60">Deadline</span>
-                <span class="font-medium dark:text-brand-light text-brand-dark">{{ app.deadline_app || 'N/A' }}</span>
+                <span class="font-medium dark:text-brand-light text-brand-dark">{{ formatDate(app.deadline_app) }}</span>
              </div>
              <div class="flex justify-between text-xs">
                 <span class="text-brand-dark/60 dark:text-brand-light/60">{{ t('detail.country') }}</span>
@@ -107,6 +107,7 @@ import type { Application } from '~/types';
 
 const { applications, checklistItems, recommenders, fetchAll, upsertApplication } = useApplications();
 const { t } = useTranslation();
+const { formatDate } = useDate();
 const router = useRouter();
 const api = useApi();
 

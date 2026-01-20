@@ -129,7 +129,7 @@
                :placeholder="t('detail.notes_placeholder')"
             ></textarea>
             <div class="mt-4 text-xs text-brand-dark/40 dark:text-brand-light/40 text-right font-mono">
-               {{ t('detail.last_updated') }}: {{ app.updated_at ? new Date(app.updated_at).toLocaleString() : 'Never' }}
+               {{ t('detail.last_updated') }}: {{ formatDate(app.updated_at, { dateStyle: 'long', timeStyle: 'short' }) }}
             </div>
          </div>
       </div>
@@ -146,6 +146,7 @@ const route = useRoute();
 const router = useRouter();
 const { t } = useTranslation();
 const { applications, fetchDetails, upsertApplication, deleteApplication, seedTemplate, recalculateProgress, loading } = useApplications();
+const { formatDate } = useDate();
 
 const appId = route.params.id as string;
 

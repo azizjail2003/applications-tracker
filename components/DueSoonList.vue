@@ -28,7 +28,7 @@
              <div class="text-xs font-bold text-brand-gold">
                {{ daysLeft(app.deadline_app) }} days left
              </div>
-             <div class="text-[10px] text-brand-dark/40 dark:text-brand-light/40 font-mono mt-0.5">{{ app.deadline_app }}</div>
+             <div class="text-[10px] text-brand-dark/40 dark:text-brand-light/40 font-mono mt-0.5">{{ formatDate(app.deadline_app) }}</div>
           </div>
         </div>
       </NuxtLink>
@@ -39,6 +39,7 @@
 <script setup lang="ts">
 const { applications } = useApplications();
 const { t } = useTranslation();
+const { formatDate } = useDate();
 
 const dueSoon = computed(() => {
   const now = new Date();
