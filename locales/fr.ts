@@ -61,6 +61,7 @@ export default {
         step_b: 'Étape B : Déployer le script',
         enter_url: 'Entrez l\'URL de la Web App',
         launch: 'Lancer l\'application 🚀',
+        config_loaded: 'Configuration chargée avec succès ! Redirection...',
     },
     loading: {
         title: 'Synchronisation...',

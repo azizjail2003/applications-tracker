@@ -112,6 +112,28 @@
         </div>
       </div>
     </div>
+    <!-- Success Overlay -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-500 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-300 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="importSuccess" class="fixed inset-0 z-[100] bg-brand-dark/90 backdrop-blur-xl flex flex-col items-center justify-center text-center p-6">
+           <div class="w-24 h-24 bg-brand-teal rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(45,212,191,0.3)] animate-bounce">
+              <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+           </div>
+           
+           <h2 class="text-4xl font-bold text-white mb-4 tracking-tight">
+             {{ t('setup.config_loaded') }}
+           </h2>
+           <p class="text-brand-light/60 text-lg">Connecting to your personal database...</p>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -121,6 +143,7 @@ const config = useRuntimeConfig();
 const apiUrl = ref('');
 const copied = ref(false);
 const error = ref('');
+const importSuccess = ref(false);
 const route = useRoute();
 const router = useRouter();
 
@@ -132,10 +155,13 @@ onMounted(() => {
        // Optional: Auto-save if it looks valid to streamline the UX
        if (importUrl.startsWith('https://script.google.com/') && importUrl.endsWith('/exec')) {
             localStorage.setItem('msc_tracker_api_url', importUrl);
+            
+            // Show premium success overlay
+            importSuccess.value = true;
+            
             setTimeout(() => {
-                alert(t('setup.config_loaded') || 'Configuration loaded! Redirecting...');
                 router.push('/');
-            }, 500);
+            }, 2000);
        }
    } else {
        // Try to pre-fill from localStorage if available, or fallback to config
