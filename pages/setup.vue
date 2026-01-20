@@ -122,6 +122,7 @@ const apiUrl = ref('');
 const copied = ref(false);
 const error = ref('');
 const route = useRoute();
+const router = useRouter();
 
 onMounted(() => {
    // Check for magic link import

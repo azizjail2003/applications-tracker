@@ -73,6 +73,7 @@
         </div>
       </div>
     </div>
+    <ShareModal v-model="shareModalOpen" :link="shareLink" />
   </header>
 </template>
 
@@ -85,20 +86,18 @@ const toggleLang = () => {
   setLocale(locale.value === 'en' ? 'fr' : 'en');
 };
 
-const shareAccount = async () => {
+const shareModalOpen = ref(false);
+const shareLink = ref('');
+
+const shareAccount = () => {
     const apiUrl = localStorage.getItem('msc_tracker_api_url');
     if (!apiUrl) {
         alert('No account configured yet. Please go to Setup.');
         return;
     }
     
-    const importLink = `${window.location.origin}/setup?import=${encodeURIComponent(apiUrl)}`;
-    
-    try {
-        await navigator.clipboard.writeText(importLink);
-        alert('Magic Link copied to clipboard! Share it with others to grant them access.');
-    } catch (err) {
-        alert('Failed to copy link. Please manually copy the URL from setup page.');
-    }
+    // Generate link
+    shareLink.value = `${window.location.origin}/setup?import=${encodeURIComponent(apiUrl)}`;
+    shareModalOpen.value = true;
 };
 </script>
