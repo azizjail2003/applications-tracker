@@ -229,7 +229,7 @@ const toggleReminders = async () => {
         isReminderLoading.value = true;
         showTools.value = false;
         try {
-            await api.post(action, {});
+            await api.get(action, {}); // Switched to GET for CORS
             // Wait for 1.2s to ensure Google Trigger propagates
             await new Promise(r => setTimeout(r, 1200));
             await checkReminders();
@@ -251,7 +251,7 @@ const toggleReminders = async () => {
 };
 
 const testReminders = async () => {
-    await api.post('testEmail', {});
+    await api.get('testEmail', {}); // Switched to GET for CORS
     notify('Test email sent! Check your inbox (and spam folder).', 'Test Successful', 'success');
 };
 

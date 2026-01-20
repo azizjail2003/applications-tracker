@@ -13,67 +13,58 @@ export const useApi = () => {
     const request = async <T>(action: string, method: 'GET' | 'POST', data?: any): Promise<T | null> => {
         const url = getUrl();
         if (!url) {
-            console.error('API URL not configured');
-            // Redirect to setup if not configured and not already there
-            if (router.currentRoute.value.path !== '/setup') {
-                router.push('/setup');
-            }
+            if (router.currentRoute.value.path !== '/setup') router.push('/setup');
             return null;
         }
 
+        // GAS Trick: Always put action in URL to help routing even on POST
+        const queryParams = new URLSearchParams({ action });
+        if (method === 'GET' && data) {
+            Object.entries(data).forEach(([key, val]) => {
+                if (val !== undefined && val !== null) queryParams.append(key, String(val));
+            });
+        }
+
+        const finalUrl = `${url}${url.includes('?') ? '&' : '?'}${queryParams.toString()}`;
+
         const options: RequestInit = {
             method,
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8', // Google Apps Script quirk
-            },
+            mode: 'cors',
+            redirect: 'follow', // Crucial for GAS
         };
 
         if (method === 'POST') {
-            options.body = JSON.stringify({ action, ...data });
-        } else {
-            // For GET, we append to URL
+            options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+            options.body = JSON.stringify({ action, data });
         }
 
         try {
-            // Fix: Include 'action' in URL query string for both GET and POST.
-            // This is a known workaround for GAS redirects to handle CORS more reliably.
-            const urlWithAction = `${url}?action=${action}`;
-            const finalUrl = method === 'GET' && Object.keys(data || {}).length > 0
-                ? `${urlWithAction}&${new URLSearchParams(data)}`
-                : urlWithAction;
-
             const response = await fetch(finalUrl, options);
-
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
 
             const json = await response.json();
+            if (json.ok === false || json.status === 'error') throw new Error(json.error || json.message || 'API Error');
 
-            if (json.status === 'error') {
-                throw new Error(json.message);
-            }
-
-            return json.data as T;
-        } catch (error) {
+            // Handle both {ok: true, data: T} and { ...T }
+            return (json.data !== undefined ? json.data : json) as T;
+        } catch (error: any) {
             console.error(`API Call Failed (${action}):`, error);
+            // Help user identify Authorization as the likely culprit if it's a fetch error
+            if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                console.warn('CORS/Fetch error often means Google Apps Script is not authorized or deployed correctly.');
+            }
             throw error;
         }
     };
 
-    const post = async <T>(action: string, data?: any): Promise<T | null> => {
-        if (isReadOnly.value) {
-            console.warn('Blocked mutation in Read-Only mode');
-            alert('View Only Mode: You cannot make changes.');
-            // Allow this to fail gracefully or just return null?
-            // Throwing might break some UI that expects a result, but safety first.
-            throw new Error('Read Only Mode');
-        }
-        return request<T>(action, 'POST', data);
-    };
-
     return {
         get: <T>(action: string, params?: any) => request<T>(action, 'GET', params),
-        post: post,
+        post: <T>(action: string, data?: any) => {
+            if (isReadOnly.value) {
+                alert('View Only Mode: Changes blocked.');
+                throw new Error('Read Only');
+            }
+            return request<T>(action, 'POST', data);
+        },
     };
 };
