@@ -30,7 +30,13 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
+      navigateFallback: null, // Disable to avoid non-precached-url errors
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/script\.google\.com\/.*/i,
+          handler: 'NetworkOnly', // Never cache API calls
+        },
+      ],
     },
     devOptions: {
       enabled: true,
