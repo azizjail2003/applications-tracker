@@ -8,15 +8,41 @@
           <p class="dark:text-brand-light/60 text-brand-dark/60 text-sm font-light">{{ filteredApps.length }} programs being tracked</p>
         </div>
         <div class="flex gap-2">
-          <div class="relative group" v-if="!isReadOnly">
-             <button class="px-4 py-2 glass rounded-xl dark:text-brand-light text-brand-dark text-sm font-medium hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 flex items-center gap-2 transition-all border dark:border-brand-light/10 border-brand-dark/10 bg-brand-light/50 dark:bg-transparent">
+          <div class="relative" v-if="!isReadOnly">
+             <button 
+                @click="showTools = !showTools"
+                class="px-4 py-2 glass rounded-xl dark:text-brand-light text-brand-dark text-sm font-medium hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 flex items-center gap-2 transition-all border dark:border-brand-light/10 border-brand-dark/10 bg-brand-light/50 dark:bg-transparent"
+             >
                 <span>Data Tools</span>
+                <svg :class="{'rotate-180': showTools}" class="w-4 h-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
              </button>
-             <div class="absolute right-0 mt-2 w-48 glass rounded-xl shadow-xl p-2 hidden group-hover:block z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
-                <button @click="enableReminders" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 pb-1">Using Daily Reminders 🔔</button>
-                <button @click="exportData" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.export') }}</button>
-                <button @click="fileInput?.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.import') }}</button>
-             </div>
+             
+             <!-- Dropdown Backdrop to close on click outside -->
+             <div v-if="showTools" @click="showTools = false" class="fixed inset-0 z-10"></div>
+
+             <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0 translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-2"
+             >
+                <div v-if="showTools" class="absolute right-0 mt-2 w-56 glass rounded-xl shadow-xl p-2 z-20 backdrop-blur-xl dark:bg-brand-dark/95 bg-brand-light/95 border dark:border-brand-light/10 border-brand-dark/10">
+                    <button @click="enableReminders" class="w-full text-left px-3 py-3 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors border-b border-brand-dark/5 dark:border-brand-light/5 mb-1 flex items-center justify-between group">
+                        <span>Turn On Reminders</span>
+                        <span class="text-xs bg-brand-teal/10 text-brand-teal px-1.5 py-0.5 rounded group-hover:bg-brand-teal group-hover:text-white transition-colors">1-Click</span>
+                    </button>
+                    <button @click="exportData" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        {{ t('applications.export') }}
+                    </button>
+                    <button @click="fileInput?.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        {{ t('applications.import') }}
+                    </button>
+                </div>
+             </Transition>
           </div>
           <button v-if="!isReadOnly" @click="createNew" class="px-5 py-2 bg-brand-teal text-white rounded-xl font-bold hover:bg-brand-dark transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
             <span>+ {{ t('applications.new_app') }}</span>
@@ -130,6 +156,7 @@ const filterStatus = ref('');
 const filterMissing = ref('');
 const sortBy = ref('deadline');
 const fileInput = ref<HTMLInputElement | null>(null);
+const showTools = ref(false);
 
 onMounted(() => {
   fetchAllData(); // Fetch full data for filters
@@ -169,6 +196,7 @@ const enableReminders = async () => {
     if (confirm('Enable daily 8AM email reminders for deadlines? This requires that you have updated your backend script.')) {
         await api.post('enableReminders', {});
         alert('Reminders enabled! You will get emails at 8AM for deadlines in 7, 3, and 1 days.');
+        showTools.value = false;
     }
 };
 
