@@ -104,10 +104,13 @@ function handleRequest(e) {
                 throw new Error('Unknown action: ' + reqAction);
         }
 
-        return ContentService.createTextOutput(JSON.stringify({ ok: true, data: data }))
+        const responsePayload = { ok: true, data: data };
+        console.log(`Action: ${reqAction}, Success: true`);
+        return ContentService.createTextOutput(JSON.stringify(responsePayload))
             .setMimeType(ContentService.MimeType.JSON);
 
     } catch (err) {
+        console.error(`Action: ${reqAction}, Error: ${err.toString()}`);
         return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
             .setMimeType(ContentService.MimeType.JSON);
     } finally {
@@ -117,9 +120,6 @@ function handleRequest(e) {
 
 
 function setupReminders(enable) {
-    if (SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') {
-        throw new Error('Please set your SHEET_ID in the script first.');
-    }
     const triggers = ScriptApp.getProjectTriggers();
 
     triggers.forEach(t => {

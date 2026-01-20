@@ -176,8 +176,10 @@ const isReminderLoading = ref(false);
 
 const checkReminders = async () => {
     try {
-        const res = await api.get('checkReminderStatus', {});
-        if (res.ok) remindersEnabled.value = !!res.data?.enabled;
+        const data = await api.get<{ enabled: boolean }>('checkReminderStatus', {});
+        if (data && typeof data.enabled !== 'undefined') {
+            remindersEnabled.value = data.enabled;
+        }
     } catch (e) {
         console.error('Failed to check reminders');
     }
