@@ -376,12 +376,12 @@ function handleRequest(e) {
         }
 
         const responsePayload = { ok: true, data: data };
-        console.log(\`Action: \${reqAction}, Success: true\`);
+        console.log("Action: " + reqAction + ", Success: true");
         return ContentService.createTextOutput(JSON.stringify(responsePayload))
             .setMimeType(ContentService.MimeType.JSON);
 
     } catch (err) {
-        console.error(\`Action: \${reqAction}, Error: \${err.toString()}\`);
+        console.error("Action: " + reqAction + ", Error: " + err.toString());
         return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
             .setMimeType(ContentService.MimeType.JSON);
     } finally {
@@ -422,8 +422,8 @@ function hasTrigger() {
 function sendTestEmail() {
     // getEffectiveUser() is more reliable for personal web apps
     const recipient = Session.getEffectiveUser().getEmail();
-    const subject = \`🧪 Test Email - MSc Tracker Ready!\`;
-    const body = \`Success! Your reminder system is connected.\\n\\nYou will receive real alerts when deadlines are exactly 7, 3, or 1 day away.\\n\\n--\\nMSc Application Tracker\`;
+    const subject = "🧪 Test Email - MSc Tracker Ready!";
+    const body = "Success! Your reminder system is connected.\n\nYou will receive real alerts when deadlines are exactly 7, 3, or 1 day away.\n\n--\nMSc Application Tracker";
 
     if (!recipient) {
         throw new Error("Could not detect your email. Please run this function once manually in the script editor to authorize it.");
@@ -451,14 +451,14 @@ function checkDeadlines() {
         const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
 
         if (diffDays === 7 || diffDays === 3 || diffDays === 1) {
-            alerts.push(\`📅 \${diffDays} days left: \${app.university} - \${app.program} (Due: \${new Date(app.deadline_app).toLocaleDateString()})\`);
+            alerts.push("📅 " + diffDays + " days left: " + app.university + " - " + app.program + " (Due: " + new Date(app.deadline_app).toLocaleDateString() + ")");
         }
     });
 
     if (alerts.length > 0) {
         const recipient = Session.getEffectiveUser().getEmail();
-        const subject = \`⚠️ \${alerts.length} Upcoming Deadlines - MSc Tracker\`;
-        const body = \`You have upcoming deadlines:\\n\\n\${alerts.join('\\n')}\\n\\nGood luck!\\n\\n--\\nMSc Application Tracker\`;
+        const subject = "⚠️ " + alerts.length + " Upcoming Deadlines - MSc Tracker";
+        const body = "You have upcoming deadlines:\n\n" + alerts.join("\n") + "\n\nGood luck!\n\n--\nMSc Application Tracker";
 
         if (recipient) {
             MailApp.sendEmail(recipient, subject, body);
@@ -545,7 +545,7 @@ function bulkImport(ss, sheetName, items) {
     // For now, simple loop is safer for logic correctness
     items.forEach(item => upsertRow(ss, sheetName, item));
 }
-\`;
+`;
 
 const copyCode = () => {
    navigator.clipboard.writeText(backendCode);
