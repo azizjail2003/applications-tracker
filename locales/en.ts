@@ -89,5 +89,10 @@ export default {
         delete_app: 'Are you sure you want to delete this entire application?',
         delete_item: 'Are you sure you want to delete this item?',
         delete_rec: 'Are you sure you want to delete this recommender?'
+    },
+    footer: {
+        beta_note: 'MSc Application Tracker is currently in early beta.',
+        contact: 'Encountered an issue? Contact the developer at',
+        built_by: 'Built by',
     }
 };

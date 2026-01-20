@@ -1,9 +1,20 @@
 <template>
   <div class="min-h-screen bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light transition-colors duration-500 font-sans selection:bg-brand-teal selection:text-white">
     <AppHeader />
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 pb-20">
       <NuxtPage />
     </main>
+
+    <!-- Footer Disclaimer -->
+    <footer class="py-6 text-center border-t border-brand-dark/5 dark:border-brand-light/5 mt-auto space-y-2">
+        <p class="text-xs text-brand-dark/40 dark:text-brand-light/40">
+            <span class="font-bold">{{ t('footer.beta_note') }}</span> 
+            {{ t('footer.contact') }} <a href="mailto:jailabdelaziz@icloud.com" class="text-brand-teal hover:underline">jailabdelaziz@icloud.com</a>
+        </p>
+        <p class="text-[10px] text-brand-dark/30 dark:text-brand-light/30">
+            {{ t('footer.built_by') }} <a href="https://jailabdelaziz.online" target="_blank" class="hover:text-brand-teal transition-colors">Abdelaziz Jail</a>
+        </p>
+    </footer>
     <ConfirmModal />
     <GlobalLoader />
   </div>
@@ -11,7 +22,7 @@
 
 <script setup lang="ts">
 const { initTheme } = useTheme();
-const { initLocale } = useTranslation();
+const { initLocale, t } = useTranslation();
 
 onMounted(() => {
   initTheme();

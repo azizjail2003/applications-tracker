@@ -89,5 +89,10 @@ export default {
         delete_app: 'Êtes-vous sûr de vouloir supprimer cette candidature ?',
         delete_item: 'Êtes-vous sûr de vouloir supprimer cet élément ?',
         delete_rec: 'Êtes-vous sûr de vouloir supprimer ce recommandant ?'
+    },
+    footer: {
+        beta_note: 'MSc Application Tracker est actuellement en version bêta.',
+        contact: 'Un problème ? Contactez le développeur à',
+        built_by: 'Créé par',
     }
 };
