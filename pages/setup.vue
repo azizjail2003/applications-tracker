@@ -86,18 +86,21 @@
                   </li>
                   <li>
                      <strong>Copy these exact headers into Row 1 of each sheet:</strong>
-                     <ul class="mt-2 space-y-2 pl-2 border-l-2 border-brand-teal/20">
+                     <ul class="mt-2 space-y-4 pl-2 border-l-2 border-brand-teal/20">
                         <li>
                            <span class="font-bold text-brand-teal">applications</span>:
-                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, university, program, country, status, deadline_app, deadline_scholarship, portal_apply_url, portal_status_url, progress, priority, notes, updated_at</div>
+                           <div class="relative group">
+                              <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors" title="Click to select all">id	university	program	country	status	deadline_app	deadline_scholarship	portal_apply_url	portal_status_url	progress	priority	notes	updated_at</pre>
+                              <div class="text-[9px] text-brand-dark/40 dark:text-brand-light/40 mt-1">Tip: Triple-click to select row, then Copy & Paste into Sheet A1</div>
+                           </div>
                         </li>
                         <li>
                            <span class="font-bold text-brand-teal">checklist</span>:
-                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, application_id, item, state, link, updated_at</div>
+                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	item	state	link	updated_at</pre>
                         </li>
                         <li>
                            <span class="font-bold text-brand-teal">recommenders</span>:
-                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, application_id, name, email, state, last_nudge_date, updated_at</div>
+                           <pre class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-2 rounded mt-0.5 overflow-x-auto whitespace-pre cursor-pointer hover:bg-brand-dark/10 transition-colors">id	application_id	name	email	state	last_nudge_date	updated_at</pre>
                         </li>
                      </ul>
                   </li>
