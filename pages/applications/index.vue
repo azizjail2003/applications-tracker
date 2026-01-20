@@ -45,6 +45,11 @@
            <option value="Rejected">Rejected</option>
          </select>
          
+         <select v-model="filterMissing" class="transition-all bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 dark:text-brand-light text-brand-dark rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer">
+           <option value="">Everything OK</option>
+           <option v-for="item in uniqueMissingItems" :key="item" :value="item">Missing: {{ item }}</option>
+         </select>
+         
          <select v-model="sortBy" class="transition-all bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 dark:text-brand-light text-brand-dark rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer">
            <option value="deadline">{{ t('applications.sort_deadline') }}</option>
            <option value="priority">{{ t('applications.sort_priority') }}</option>
