@@ -33,9 +33,20 @@
                 <input 
                     :value="localName"
                     @input="updateName(($event.target as HTMLInputElement).value)"
-                    placeholder="e.g. Aziz" 
+                    placeholder="e.g. Jhon Doe" 
                     class="w-full bg-brand-light/5 border border-brand-light/10 rounded-xl px-4 py-2 text-sm text-brand-light placeholder-brand-light/30 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all"
                 />
+            </div>
+
+            <!-- View Only Toggle -->
+            <div class="mb-6 flex items-center gap-3 bg-brand-light/5 border border-brand-light/10 p-3 rounded-xl cursor-pointer hover:bg-brand-light/10 transition-colors" @click="readOnlyMode = !readOnlyMode">
+                <div class="w-5 h-5 rounded border border-brand-teal flex items-center justify-center transition-colors" :class="readOnlyMode ? 'bg-brand-teal' : 'bg-transparent'">
+                    <svg v-if="readOnlyMode" class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <div class="flex-1 text-left">
+                    <span class="block text-sm font-bold text-brand-light">View Only Mode</span>
+                    <span class="block text-[10px] text-brand-light/60">Recipients can view but cannot edit data.</span>
+                </div>
             </div>
 
             <!-- Link Input -->
@@ -84,6 +95,7 @@ const { userName, setUserName } = useUser();
 // Local ref for the input in this modal to allow temporary editing without committing global immediately, or sync directly?
 // Syncing directly is cleaner for "personalized dashboard" feel.
 const localName = ref(userName.value);
+const readOnlyMode = ref(false);
 
 watch(userName, (val) => localName.value = val);
 
@@ -98,6 +110,9 @@ const finalLink = computed(() => {
     let url = `${window.location.origin}/setup?import=${encodeURIComponent(props.baseUrl)}`;
     if (localName.value.trim()) {
         url += `&name=${encodeURIComponent(localName.value.trim())}`;
+    }
+    if (readOnlyMode.value) {
+        url += `&readonly=true`;
     }
     return url;
 });

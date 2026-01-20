@@ -1,60 +1,74 @@
-import type { ApiResponse } from '~/types';
-
 export const useApi = () => {
-    const request = async <T>(action: string, method: 'GET' | 'POST' = 'GET', payload?: any): Promise<T | null> => {
-        // Dynamic API URL from localStorage (for multi-user/Vercel)
-        let currentApiBase = '';
-        if (import.meta.client) {
-            currentApiBase = localStorage.getItem('msc_tracker_api_url') || '';
-        }
+    const config = useRuntimeConfig();
+    const router = useRouter();
+    const { isReadOnly } = useReadOnly();
 
-        // If still no URL, redirect to setup
-        if (!currentApiBase) {
-            if (import.meta.client && window.location.pathname !== '/setup') {
-                window.location.href = '/setup';
+    const getUrl = () => {
+        if (import.meta.client) {
+            return localStorage.getItem('msc_tracker_api_url') || config.public.apiBase;
+        }
+        return config.public.apiBase;
+    };
+
+    const request = async <T>(action: string, method: 'GET' | 'POST', data?: any): Promise<T | null> => {
+        const url = getUrl();
+        if (!url) {
+            console.error('API URL not configured');
+            // Redirect to setup if not configured and not already there
+            if (router.currentRoute.value.path !== '/setup') {
+                router.push('/setup');
             }
             return null;
+        }
+
+        const options: RequestInit = {
+            method,
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8', // Google Apps Script quirk
+            },
+        };
+
+        if (method === 'POST') {
+            options.body = JSON.stringify({ action, ...data });
+        } else {
+            // For GET, we append to URL
         }
 
         try {
-            const opts: any = {
-                method,
-            };
+            const finalUrl = method === 'GET' ? `${url}?${new URLSearchParams({ action, ...data })}` : url;
 
-            let url = `${currentApiBase}?action=${action}`;
+            const response = await fetch(finalUrl, options);
 
-            if (method === 'GET' && payload) {
-                // Append query params
-                const params = new URLSearchParams(payload).toString();
-                url += `&${params}`;
-            } else if (method === 'POST') {
-                // Apps Script CORS hack:
-                // We MUST send Content-Type: text/plain to avoid OPTIONS preflight request which Apps Script does not handle.
-                // The body is still JSON stringified, but browser thinks it is text.
-                opts.headers = {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                };
-                opts.body = JSON.stringify({ action, ...payload });
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.statusText}`);
             }
 
-            const res = await $fetch<ApiResponse<T>>(url, opts);
+            const json = await response.json();
 
-            if (res && res.ok) {
-                return res.data as T;
-            } else {
-                console.error('API Error:', res?.error);
-                // If error suggests auth or invalid script, maybe prompt setup again? 
-                // For now just throw.
-                return null;
+            if (json.status === 'error') {
+                throw new Error(json.message);
             }
-        } catch (e) {
-            console.error('Request failed', e);
-            return null;
+
+            return json.data as T;
+        } catch (error) {
+            console.error(`API Call Failed (${action}):`, error);
+            throw error;
         }
+    };
+
+    const post = async <T>(action: string, data?: any): Promise<T | null> => {
+        if (isReadOnly.value) {
+            console.warn('Blocked mutation in Read-Only mode');
+            alert('View Only Mode: You cannot make changes.');
+            // Allow this to fail gracefully or just return null?
+            // Throwing might break some UI that expects a result, but safety first.
+            throw new Error('Read Only Mode');
+        }
+        return request<T>(action, 'POST', data);
     };
 
     return {
         get: <T>(action: string, params?: any) => request<T>(action, 'GET', params),
-        post: <T>(action: string, data?: any) => request<T>(action, 'POST', data),
+        post: post,
     };
 };

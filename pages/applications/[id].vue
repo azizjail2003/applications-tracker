@@ -7,7 +7,7 @@
          <NuxtLink to="/applications" class="text-sm text-brand-teal dark:text-brand-light/80 hover:text-brand-dark dark:hover:text-brand-light flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 transition-colors group">
            <span class="group-hover:-translate-x-1 transition-transform">&larr;</span> {{ t('detail.back') }}
          </NuxtLink>
-         <div class="flex gap-3">
+         <div class="flex gap-3" v-if="!isReadOnly">
             <button @click="handleDelete" class="text-sm text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 px-4 py-2 hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-500/30">{{ t('detail.delete') }}</button>
             <button @click="save" class="px-6 py-2 bg-brand-teal text-white text-sm font-bold rounded-xl shadow-lg hover:bg-brand-dark transition-all">{{ t('detail.save') }}</button>
          </div>
@@ -22,18 +22,18 @@
                <div class="space-y-6">
                   <div>
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-widest mb-2">{{ t('detail.university') }}</label>
-                    <input v-model="app.university" @blur="autoSave" class="block w-full text-3xl font-bold bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-dark dark:text-brand-light transition-colors" placeholder="University Name" />
+                    <input :disabled="isReadOnly" v-model="app.university" @blur="autoSave" class="block w-full text-3xl font-bold bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-dark dark:text-brand-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed" placeholder="University Name" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-widest mb-2">{{ t('detail.program') }}</label>
-                    <input v-model="app.program" @blur="autoSave" class="block w-full text-xl bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-teal dark:text-brand-light/80 transition-colors" placeholder="Program Name" />
+                    <input :disabled="isReadOnly" v-model="app.program" @blur="autoSave" class="block w-full text-xl bg-transparent border-0 border-b border-brand-dark/20 dark:border-brand-light/20 px-0 py-2 focus:ring-0 focus:border-brand-teal placeholder-brand-dark/20 dark:placeholder-brand-light/20 text-brand-teal dark:text-brand-light/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Program Name" />
                   </div>
                </div>
                
                <div class="space-y-6 md:text-right">
                   <div class="flex flex-col md:items-end">
                     <label class="block text-xs font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-wide mb-2">{{ t('detail.status') }}</label>
-                    <select v-model="app.status" @change="save" class="block w-full md:w-48 bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 text-brand-dark dark:text-brand-light rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer shadow-sm">
+                    <select :disabled="isReadOnly" v-model="app.status" @change="save" class="block w-full md:w-48 bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 text-brand-dark dark:text-brand-light rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-teal focus:border-transparent cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                       <option value="Draft">Draft</option>
                       <option value="In progress">In Progress</option>
                       <option value="Submitted">Submitted</option>
@@ -56,19 +56,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-brand-dark/5 dark:border-brand-light/5">
                <div>
                  <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.country') }}</label>
-                 <input v-model="app.country" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="e.g. UK" />
+                 <input :disabled="isReadOnly" v-model="app.country" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed" placeholder="e.g. UK" />
                </div>
                <div>
                  <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.priority') }} (1-5)</label>
-                 <input type="number" v-model.number="app.priority" @blur="autoSave" min="1" max="5" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" />
+                 <input :disabled="isReadOnly" type="number" v-model.number="app.priority" @blur="autoSave" min="1" max="5" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed" />
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.app_deadline') }}</label>
-                  <input type="date" v-model="deadlineAppInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input :disabled="isReadOnly" type="date" v-model="deadlineAppInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark] disabled:opacity-50 disabled:cursor-not-allowed" />
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.scholarship_deadline') }}</label>
-                  <input type="date" v-model="deadlineScholarshipInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark]" />
+                  <input :disabled="isReadOnly" type="date" v-model="deadlineScholarshipInput" @blur="autoSave" class="w-full text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-lg px-3 py-2 text-brand-dark dark:text-brand-light/80 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all dark:[color-scheme:dark] disabled:opacity-50 disabled:cursor-not-allowed" />
                </div>
             </div>
             
@@ -77,18 +77,18 @@
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.app_portal') }}</label>
                   <div class="flex">
-                    <input v-model="app.portal_apply_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
+                    <input :disabled="isReadOnly" v-model="app.portal_apply_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed" placeholder="https://..." />
                     <a v-if="app.portal_apply_url" :href="app.portal_apply_url" target="_blank" class="bg-brand-teal hover:bg-brand-dark border border-brand-teal px-3 py-2 rounded-r-lg flex items-center justify-center transition-colors text-white">
-                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     </a>
                   </div>
                </div>
                <div>
                   <label class="block text-[10px] font-bold text-brand-dark/40 dark:text-brand-light/40 uppercase mb-2">{{ t('detail.status_portal') }}</label>
                   <div class="flex">
-                    <input v-model="app.portal_status_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all" placeholder="https://..." />
+                    <input :disabled="isReadOnly" v-model="app.portal_status_url" @blur="autoSave" class="flex-1 text-sm bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-l-lg px-3 py-2 text-brand-dark dark:text-brand-light placeholder-brand-dark/40 dark:placeholder-brand-light/40 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed" placeholder="https://..." />
                     <a v-if="app.portal_status_url" :href="app.portal_status_url" target="_blank" class="bg-brand-teal hover:bg-brand-dark border border-brand-teal px-3 py-2 rounded-r-lg flex items-center justify-center transition-colors text-white">
-                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     </a>
                   </div>
                </div>
@@ -106,7 +106,7 @@
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                     {{ t('detail.checklist') }}
                   </h3>
-                  <button @click="seed" class="text-xs bg-brand-teal/10 text-brand-teal border border-brand-teal/20 px-3 py-1.5 rounded-lg hover:bg-brand-teal/20 transition-colors">{{ t('detail.seed_items') }}</button>
+                  <button v-if="!isReadOnly" @click="seed" class="text-xs bg-brand-teal/10 text-brand-teal border border-brand-teal/20 px-3 py-1.5 rounded-lg hover:bg-brand-teal/20 transition-colors">{{ t('detail.seed_items') }}</button>
                </div>
                <ChecklistEditor :appId="app.id" />
             </div>
@@ -125,7 +125,8 @@
             <textarea 
                v-model="app.notes" 
                @blur="autoSave" 
-               class="flex-1 min-h-[400px] w-full bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-xl text-sm text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent p-4 placeholder-brand-dark/40 dark:placeholder-brand-light/40 leading-relaxed transition-colors"
+               :disabled="isReadOnly"
+               class="flex-1 min-h-[400px] w-full bg-brand-light/50 dark:bg-brand-dark/50 border border-brand-dark/10 dark:border-brand-light/10 rounded-xl text-sm text-brand-dark dark:text-brand-light focus:ring-2 focus:ring-brand-teal focus:border-transparent p-4 placeholder-brand-dark/40 dark:placeholder-brand-light/40 leading-relaxed transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                :placeholder="t('detail.notes_placeholder')"
             ></textarea>
             <div class="mt-4 text-xs text-brand-dark/40 dark:text-brand-light/40 text-right font-mono">
@@ -147,6 +148,7 @@ const router = useRouter();
 const { t } = useTranslation();
 const { applications, fetchDetails, upsertApplication, deleteApplication, seedTemplate, recalculateProgress, loading } = useApplications();
 const { formatDate, toValueDate } = useDate();
+const { isReadOnly } = useReadOnly();
 
 const appId = route.params.id as string;
 

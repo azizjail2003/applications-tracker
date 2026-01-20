@@ -17,5 +17,6 @@ onMounted(() => {
   initTheme();
   initLocale();
   useUser().initUser();
+  useReadOnly().initReadOnly();
 });
 </script>

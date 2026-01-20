@@ -8,7 +8,7 @@
           <p class="dark:text-brand-light/60 text-brand-dark/60 text-sm font-light">{{ filteredApps.length }} programs being tracked</p>
         </div>
         <div class="flex gap-2">
-          <div class="relative group">
+          <div class="relative group" v-if="!isReadOnly">
              <button class="px-4 py-2 glass rounded-xl dark:text-brand-light text-brand-dark text-sm font-medium hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 flex items-center gap-2 transition-all border dark:border-brand-light/10 border-brand-dark/10 bg-brand-light/50 dark:bg-transparent">
                 <span>Data Tools</span>
              </button>
@@ -17,11 +17,11 @@
                 <button @click="fileInput?.click()" class="w-full text-left px-3 py-2 text-sm dark:text-brand-light text-brand-dark hover:bg-brand-dark/5 dark:hover:bg-brand-light/10 rounded-lg transition-colors">{{ t('applications.import') }}</button>
              </div>
           </div>
-          <button @click="createNew" class="px-5 py-2 bg-brand-teal text-white rounded-xl font-bold hover:bg-brand-dark transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
+          <button v-if="!isReadOnly" @click="createNew" class="px-5 py-2 bg-brand-teal text-white rounded-xl font-bold hover:bg-brand-dark transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
             <span>+ {{ t('applications.new_app') }}</span>
           </button>
         </div>
-        <input type="file" ref="fileInput" class="hidden" accept=".json" @change="importData" />
+        <input v-if="!isReadOnly" type="file" ref="fileInput" class="hidden" accept=".json" @change="importData" />
       </div>
 
       <!-- Filters -->
@@ -108,6 +108,7 @@ import type { Application } from '~/types';
 const { applications, checklistItems, recommenders, fetchAll, upsertApplication } = useApplications();
 const { t } = useTranslation();
 const { formatDate } = useDate();
+const { isReadOnly } = useReadOnly();
 const router = useRouter();
 const api = useApi();
 

@@ -214,6 +214,10 @@ const acceptInvite = () => {
     // Proceed with import
     apiUrl.value = pendingImportUrl.value;
     localStorage.setItem('msc_tracker_api_url', pendingImportUrl.value);
+    
+    // Set ReadOnly if present
+    const isReadOnly = route.query.readonly === 'true';
+    useReadOnly().setReadOnly(isReadOnly);
             
     // Show premium success overlay
     importSuccess.value = true;

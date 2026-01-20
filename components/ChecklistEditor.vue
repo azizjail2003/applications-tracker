@@ -2,7 +2,7 @@
   <div class="space-y-3">
     <div class="flex items-center justify-between mb-4">
       <div class="text-sm text-brand-dark/40 dark:text-brand-light/40 uppercase tracking-wide">Items</div>
-      <button @click="add" class="text-xs text-brand-teal dark:text-brand-light/80 font-bold hover:text-brand-dark dark:hover:text-white transition-colors bg-brand-light/10 dark:bg-white/5 px-2 py-1 rounded hover:bg-brand-light/20 dark:hover:bg-white/10">+ ADD ITEM</button>
+      <button v-if="!isReadOnly" @click="add" class="text-xs text-brand-teal dark:text-brand-light/80 font-bold hover:text-brand-dark dark:hover:text-white transition-colors bg-brand-light/10 dark:bg-white/5 px-2 py-1 rounded hover:bg-brand-light/20 dark:hover:bg-white/10">+ ADD ITEM</button>
     </div>
 
     <!-- Smart Suggestions -->
@@ -33,8 +33,9 @@
       <button 
         @click="cycleState(item)"
         class="mt-0.5 flex-shrink-0 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-all duration-300 shadow-sm min-w-[70px] text-center"
-        :class="stateStyles(item.state)"
+        :class="[stateStyles(item.state), isReadOnly ? 'cursor-not-allowed opacity-70' : '']"
         title="Click to change status"
+        :disabled="isReadOnly"
       >
         {{ stateLabel(item.state) }}
       </button>
@@ -45,7 +46,8 @@
           v-model="item.item" 
           @blur="save(item)"
           @keyup.enter="($event.target as HTMLInputElement).blur()"
-          class="block w-full text-sm font-medium dark:text-brand-light text-brand-dark placeholder-brand-dark/30 dark:placeholder-brand-light/30 bg-transparent border-none p-0 focus:ring-0 transition-colors"
+          :disabled="isReadOnly"
+          class="block w-full text-sm font-medium dark:text-brand-light text-brand-dark placeholder-brand-dark/30 dark:placeholder-brand-light/30 bg-transparent border-none p-0 focus:ring-0 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
           placeholder="Item name (e.g. CV)"
         />
         <!-- Link -->
@@ -55,7 +57,8 @@
              v-model="item.link" 
              @blur="save(item)"
              @keyup.enter="($event.target as HTMLInputElement).blur()"
-             class="block w-full text-xs text-brand-teal dark:text-brand-light/80 placeholder-brand-dark/30 dark:placeholder-brand-light/30 bg-transparent border-none p-0 focus:ring-0 transition-colors"
+             :disabled="isReadOnly"
+             class="block w-full text-xs text-brand-teal dark:text-brand-light/80 placeholder-brand-dark/30 dark:placeholder-brand-light/30 bg-transparent border-none p-0 focus:ring-0 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
              placeholder="Add link..."
            />
            <a v-if="item.link" :href="item.link" target="_blank" class="opacity-0 group-hover/link:opacity-100 text-brand-teal hover:text-brand-dark dark:hover:text-brand-light transition-colors">
@@ -65,7 +68,7 @@
       </div>
 
       <!-- Delete -->
-      <button @click="remove(item.id, item.item)" class="text-brand-dark/30 dark:text-brand-light/30 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+      <button v-if="!isReadOnly" @click="remove(item.id, item.item)" class="text-brand-dark/30 dark:text-brand-light/30 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
@@ -83,6 +86,7 @@ const props = defineProps<{
 
 const { checklistItems, upsertChecklistItem, deleteChecklistItem, knownChecklistItems, initKnownItems } = useApplications();
 const { ask } = useConfirm();
+const { isReadOnly } = useReadOnly();
 
 onMounted(() => {
     initKnownItems();
@@ -91,12 +95,14 @@ onMounted(() => {
 const items = computed(() => checklistItems.value.filter(i => i.application_id === props.appId));
 
 const suggestions = computed(() => {
+    if (isReadOnly.value) return [];
     // Return known items that are NOT in the current list
     const currentNames = new Set(items.value.map(i => i.item.toLowerCase().trim()));
     return Object.keys(knownChecklistItems.value).filter(name => !currentNames.has(name.toLowerCase().trim()));
 });
 
 const add = async () => {
+  if (isReadOnly.value) return;
   const newItem: ChecklistItem = {
     id: crypto.randomUUID(),
     application_id: props.appId,
@@ -107,6 +113,7 @@ const add = async () => {
 };
 
 const quickAdd = async (name: string) => {
+  if (isReadOnly.value) return;
   const newItem: ChecklistItem = {
     id: crypto.randomUUID(),
     application_id: props.appId,
@@ -118,6 +125,7 @@ const quickAdd = async (name: string) => {
 };
 
 const remove = async (id: string, name: string) => {
+  if (isReadOnly.value) return;
   if (await ask(`Delete checklist item "${name || 'Unnamed'}"?`, 'Delete Item')) {
     await deleteChecklistItem(id);
   }
