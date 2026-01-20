@@ -275,118 +275,277 @@ const backendCode = `// PASTE THIS INTO YOUR APPS SCRIPT EDITOR
 const SHEET_ID = 'REPLACE_WITH_YOUR_SHEET_ID'; // <--- IMPORTANT
 
 function doGet(e) {
-  return handleRequest(e);
+    return handleRequest(e);
 }
 
 function doPost(e) {
-  return handleRequest(e);
+    return handleRequest(e);
 }
 
 function handleRequest(e) {
-  const lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-  
-  try {
-    const action = e.parameter.action || (e.postData && JSON.parse(e.postData.contents).action);
-    const payload = e.postData ? JSON.parse(e.postData.contents) : e.parameter;
-    
-    let result = {};
-    
-    switch(action) {
-      case 'listApplications': result = getSheetData('applications'); break;
-      case 'getApplication': result = getRowById('applications', payload.id); break;
-      case 'upsertApplication': result = upsertRow('applications', payload.data || payload); break;
-      case 'deleteApplication': result = deleteRow('applications', payload.id); break;
-      
-      case 'listChecklist': result = getSheetData('checklist'); break;
-      case 'upsertChecklistItem': result = upsertRow('checklist', payload.data || payload); break;
-      case 'deleteChecklistItem': result = deleteRow('checklist', payload.id); break;
-      
-      case 'listRecommenders': result = getSheetData('recommenders'); break;
-      case 'upsertRecommender': result = upsertRow('recommenders', payload.data || payload); break;
-      case 'deleteRecommender': result = deleteRow('recommenders', payload.id); break;
-      
-      case 'bulkUpsert': result = bulkImport(payload); break;
-      
-      default: result = { error: 'Invalid action' };
+    const lock = LockService.getScriptLock();
+    lock.tryLock(30000);
+
+    try {
+        const params = e.parameter;
+        const action = params.action;
+        let data = null;
+
+        // Parse POST data if available
+        let postData = null;
+        if (e.postData && e.postData.contents) {
+            try {
+                postData = JSON.parse(e.postData.contents);
+            } catch (err) {
+                // ignore
+            }
+        }
+
+        // For POST requests, action might be in the body
+        const reqAction = action || (postData ? postData.action : null);
+        const reqData = postData ? postData.data : null;
+        const reqId = postData ? postData.id : null;
+
+        const ss = SpreadsheetApp.openById(SHEET_ID);
+
+        switch (reqAction) {
+            case 'listApplications':
+                data = getSheetData(ss, 'applications');
+                break;
+            case 'getApplication':
+                data = getRowById(ss, 'applications', params.id);
+                break;
+            case 'upsertApplication':
+                data = upsertRow(ss, 'applications', reqData);
+                break;
+            case 'deleteApplication':
+                data = deleteRow(ss, 'applications', reqId);
+                break;
+
+            case 'listChecklist':
+                const allChecklistItems = getSheetData(ss, 'checklist');
+                if (params && params.application_id) {
+                    data = allChecklistItems.filter(item => item.application_id === params.application_id);
+                } else {
+                    data = allChecklistItems;
+                }
+                break;
+            case 'upsertChecklistItem':
+                data = upsertRow(ss, 'checklist', reqData);
+                break;
+            case 'deleteChecklistItem':
+                data = deleteRow(ss, 'checklist', reqId);
+                break;
+
+            case 'listRecommenders':
+                data = getSheetData(ss, 'recommenders').filter(item => item.application_id === params.application_id);
+                break;
+            case 'upsertRecommender':
+                data = upsertRow(ss, 'recommenders', reqData);
+                break;
+            case 'deleteRecommender':
+                data = deleteRow(ss, 'recommenders', reqId);
+                break;
+
+            case 'bulkUpsert':
+                // Simplified bulk import
+                if (reqData && reqData.applications) bulkImport(ss, 'applications', reqData.applications);
+                if (reqData && reqData.checklist) bulkImport(ss, 'checklist', reqData.checklist);
+                if (reqData && reqData.recommenders) bulkImport(ss, 'recommenders', reqData.recommenders);
+                data = { success: true };
+                break;
+
+            case 'enableReminders':
+                data = setupReminders(true);
+                break;
+
+            case 'disableReminders':
+                data = setupReminders(false);
+                break;
+
+            case 'checkReminderStatus':
+                data = { enabled: hasTrigger() };
+                break;
+
+            case 'testEmail':
+                data = sendTestEmail();
+                break;
+
+            default:
+                throw new Error('Unknown action: ' + reqAction);
+        }
+
+        const responsePayload = { ok: true, data: data };
+        console.log(\`Action: \${reqAction}, Success: true\`);
+        return ContentService.createTextOutput(JSON.stringify(responsePayload))
+            .setMimeType(ContentService.MimeType.JSON);
+
+    } catch (err) {
+        console.error(\`Action: \${reqAction}, Error: \${err.toString()}\`);
+        return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
+            .setMimeType(ContentService.MimeType.JSON);
+    } finally {
+        lock.releaseLock();
     }
-    
-    return ContentService
-      .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (e) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ 'result': 'error', 'error': e.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } finally {
-    lock.releaseLock();
-  }
 }
+
+
+function setupReminders(enable) {
+    const triggers = ScriptApp.getProjectTriggers();
+
+    triggers.forEach(t => {
+        if (t.getHandlerFunction() === 'checkDeadlines') {
+            ScriptApp.deleteTrigger(t);
+        }
+    });
+
+    if (enable) {
+        ScriptApp.newTrigger('checkDeadlines')
+            .timeBased()
+            .everyDays(1)
+            .atHour(8)
+            .create();
+        return { success: true, enabled: true, message: 'Daily reminder trigger created for 8:00 AM.' };
+    }
+    return { success: true, enabled: false, message: 'All reminder triggers removed.' };
+}
+
+function hasTrigger() {
+    try {
+        const triggers = ScriptApp.getProjectTriggers();
+        return triggers.some(t => t.getHandlerFunction() === 'checkDeadlines');
+    } catch (e) {
+        return false;
+    }
+}
+
+function sendTestEmail() {
+    // getEffectiveUser() is more reliable for personal web apps
+    const recipient = Session.getEffectiveUser().getEmail();
+    const subject = \`🧪 Test Email - MSc Tracker Ready!\`;
+    const body = \`Success! Your reminder system is connected.\\n\\nYou will receive real alerts when deadlines are exactly 7, 3, or 1 day away.\\n\\n--\\nMSc Application Tracker\`;
+
+    if (!recipient) {
+        throw new Error("Could not detect your email. Please run this function once manually in the script editor to authorize it.");
+    }
+
+    MailApp.sendEmail(recipient, subject, body);
+    return { success: true, message: 'Sent to ' + recipient };
+}
+
+function checkDeadlines() {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const applications = getSheetData(ss, 'applications');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const alerts = [];
+
+    applications.forEach(app => {
+        if (!app.deadline_app) return;
+
+        const deadline = new Date(app.deadline_app);
+        deadline.setHours(0, 0, 0, 0);
+
+        const diffTime = deadline.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+
+        if (diffDays === 7 || diffDays === 3 || diffDays === 1) {
+            alerts.push(\`📅 \${diffDays} days left: \${app.university} - \${app.program} (Due: \${new Date(app.deadline_app).toLocaleDateString()})\`);
+        }
+    });
+
+    if (alerts.length > 0) {
+        const recipient = Session.getEffectiveUser().getEmail();
+        const subject = \`⚠️ \${alerts.length} Upcoming Deadlines - MSc Tracker\`;
+        const body = \`You have upcoming deadlines:\\n\\n\${alerts.join('\\n')}\\n\\nGood luck!\\n\\n--\\nMSc Application Tracker\`;
+
+        if (recipient) {
+            MailApp.sendEmail(recipient, subject, body);
+        } else {
+            console.error("No recipient found for checkDeadlines");
+        }
+    }
+}
+
 
 // Helpers
-function getSheetData(sheetName) {
-  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(sheetName);
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const rows = data.slice(1);
-  return rows.map(row => {
-    let obj = {};
-    headers.forEach((h, i) => obj[h] = row[i]);
-    return obj;
-  });
+
+function getSheetData(ss, sheetName) {
+    const sheet = ss.getSheetByName(sheetName);
+    if (!sheet) return [];
+    const rows = sheet.getDataRange().getValues();
+    if (rows.length < 2) return [];
+    const headers = rows[0];
+    const data = [];
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) {
+            obj[headers[j]] = row[j];
+        }
+        data.push(obj);
+    }
+    return data;
 }
 
-function getRowById(sheetName, id) {
-  const list = getSheetData(sheetName);
-  return list.find(r => r.id === id);
+function getRowById(ss, sheetName, id) {
+    const data = getSheetData(ss, sheetName);
+    return data.find(r => r.id === id);
 }
 
-function upsertRow(sheetName, data) {
-  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(sheetName);
-  const allData = sheet.getDataRange().getValues();
-  const headers = allData[0];
-  
-  // Align data to headers
-  const rowData = headers.map(h => data[h] || '');
-  
-  // Find if exists
-  const idColIdx = headers.indexOf('id');
-  const existingRowIdx = allData.slice(1).findIndex(r => r[idColIdx] === data.id);
-  
-  if (existingRowIdx >= 0) {
-    // Update (row index + 2 because 1-based + header row)
-    sheet.getRange(existingRowIdx + 2, 1, 1, rowData.length).setValues([rowData]);
-  } else {
-    // Insert
-    sheet.appendRow(rowData);
-  }
-  return data;
+function upsertRow(ss, sheetName, data) {
+    const sheet = ss.getSheetByName(sheetName);
+    const rows = sheet.getDataRange().getValues();
+    const headers = rows[0];
+
+    // Ensure headers exist or create them (basic check)
+    // We assume headers match the data keys provided or exist in sheet
+
+    let rowIndex = -1;
+    if (data.id) {
+        for (let i = 1; i < rows.length; i++) {
+            if (rows[i][headers.indexOf('id')] === data.id) {
+                rowIndex = i + 1; // 1-based index
+                break;
+            }
+        }
+    }
+
+    const rowData = headers.map(h => {
+        if (h === 'updated_at') return new Date().toISOString();
+        return data[h] !== undefined ? data[h] : (rowIndex > 0 ? rows[rowIndex - 1][headers.indexOf(h)] : '');
+    });
+
+    if (rowIndex > 0) {
+        sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+        sheet.appendRow(rowData);
+    }
+
+    return { ...data, updated_at: new Date().toISOString() };
 }
 
-function deleteRow(sheetName, id) {
-  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(sheetName);
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idColIdx = headers.indexOf('id');
-  
-  // Loop backwards to delete safely
-  for (let i = data.length - 1; i >= 1; i--) {
-     if (data[i][idColIdx] === id) {
-       sheet.deleteRow(i + 1);
-       return { success: true };
-     }
-  }
-  return { error: 'Not found' };
+function deleteRow(ss, sheetName, id) {
+    const sheet = ss.getSheetByName(sheetName);
+    const rows = sheet.getDataRange().getValues();
+    const idIndex = rows[0].indexOf('id');
+
+    for (let i = 1; i < rows.length; i++) {
+        if (rows[i][idIndex] === id) {
+            sheet.deleteRow(i + 1);
+            return { id: id, deleted: true };
+        }
+    }
+    return { id: id, deleted: false };
 }
 
-function bulkImport(payload) {
-   if (payload.applications) payload.applications.forEach(a => upsertRow('applications', a));
-   if (payload.checklist) payload.checklist.forEach(c => upsertRow('checklist', c));
-   if (payload.recommenders) payload.recommenders.forEach(r => upsertRow('recommenders', r));
-   return { success: true };
+function bulkImport(ss, sheetName, items) {
+    // Warning: This is slow if loop. Better to batch.
+    // For now, simple loop is safer for logic correctness
+    items.forEach(item => upsertRow(ss, sheetName, item));
 }
-`;
+\`;
 
 const copyCode = () => {
    navigator.clipboard.writeText(backendCode);
