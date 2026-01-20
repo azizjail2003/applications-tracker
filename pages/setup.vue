@@ -121,11 +121,25 @@ const config = useRuntimeConfig();
 const apiUrl = ref('');
 const copied = ref(false);
 const error = ref('');
-const router = useRouter();
+const route = useRoute();
 
 onMounted(() => {
-   // Try to pre-fill from localStorage if available, or fallback to config
-   apiUrl.value = localStorage.getItem('msc_tracker_api_url') || config.public.apiBase || '';
+   // Check for magic link import
+   const importUrl = route.query.import as string;
+   if (importUrl) {
+       apiUrl.value = importUrl;
+       // Optional: Auto-save if it looks valid to streamline the UX
+       if (importUrl.startsWith('https://script.google.com/') && importUrl.endsWith('/exec')) {
+            localStorage.setItem('msc_tracker_api_url', importUrl);
+            setTimeout(() => {
+                alert(t('setup.config_loaded') || 'Configuration loaded! Redirecting...');
+                router.push('/');
+            }, 500);
+       }
+   } else {
+       // Try to pre-fill from localStorage if available, or fallback to config
+       apiUrl.value = localStorage.getItem('msc_tracker_api_url') || config.public.apiBase || '';
+   }
 });
 
 // Validate URL format simply
