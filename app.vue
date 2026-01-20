@@ -1,8 +1,9 @@
 <template>
-  <div class="min-h-screen transition-colors duration-300 dark:bg-brand-dark bg-brand-light font-sans text-brand-dark dark:text-brand-light">
-    <NuxtLayout>
+  <div class="min-h-screen bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light transition-colors duration-500 font-sans selection:bg-brand-teal selection:text-white">
+    <AppHeader />
+    <main class="container mx-auto px-4 py-8">
       <NuxtPage />
-    </NuxtLayout>
+    </main>
     <ConfirmModal />
     <GlobalLoader />
   </div>

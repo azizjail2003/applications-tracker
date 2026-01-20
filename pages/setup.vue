@@ -34,8 +34,28 @@
                 <h3 class="font-bold text-brand-dark dark:text-brand-light mb-3 tracking-tight">{{ t('setup.step_a') }}</h3>
                 <ol class="text-xs space-y-2 opacity-80 list-decimal list-inside pl-1">
                   <li>Go to <a href="https://sheets.new" target="_blank" class="text-brand-teal font-bold underline">sheets.new</a></li>
-                  <li>Create tabs: <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">applications</code>, <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">checklist</code>, <code class="bg-brand-teal/10 px-1 rounded text-brand-teal">recommenders</code></li>
-                  <li>Add the headers as defined in the documentation</li>
+                  <li>Create 3 tabs: 
+                     <code class="bg-brand-teal/10 px-1 rounded text-brand-teal font-mono">applications</code>, 
+                     <code class="bg-brand-teal/10 px-1 rounded text-brand-teal font-mono">checklist</code>, 
+                     <code class="bg-brand-teal/10 px-1 rounded text-brand-teal font-mono">recommenders</code>
+                  </li>
+                  <li>
+                     <strong>Copy these exact headers into Row 1 of each sheet:</strong>
+                     <ul class="mt-2 space-y-2 pl-2 border-l-2 border-brand-teal/20">
+                        <li>
+                           <span class="font-bold text-brand-teal">applications</span>:
+                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, university, program, country, status, deadline_app, deadline_scholarship, portal_apply_url, portal_status_url, progress, priority, notes, updated_at</div>
+                        </li>
+                        <li>
+                           <span class="font-bold text-brand-teal">checklist</span>:
+                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, application_id, item, state, link, updated_at</div>
+                        </li>
+                        <li>
+                           <span class="font-bold text-brand-teal">recommenders</span>:
+                           <div class="font-mono text-[10px] select-all bg-brand-dark/5 dark:bg-brand-light/10 p-1 rounded mt-0.5">id, application_id, name, email, state, last_nudge_date, updated_at</div>
+                        </li>
+                     </ul>
+                  </li>
                 </ol>
               </div>
 

@@ -11,13 +11,13 @@ export default {
         extend: {
             colors: {
                 brand: {
-                    dark: '#043c50',       // Main Dark Background
-                    'dark-hover': '#064e66',
-                    'dark-active': '#032b3a',
+                    dark: '#022c3b',       // Deep Teal (Darkened for better contrast)
+                    'dark-hover': '#043c50',
+                    'dark-active': '#011c26',
 
-                    light: '#EED9BE',      // Main Light Background/Text
-                    'light-hover': '#f5e6d0',
-                    'light-active': '#dcc0a0',
+                    light: '#F5E6D3',      // Cream (Lightened for better contrast)
+                    'light-hover': '#EED9BE',
+                    'light-active': '#E0C098',
 
                     // Functional tones derived from the palette
                     gold: '#C5A880',       // Darker version of light for accents
