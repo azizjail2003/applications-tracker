@@ -83,6 +83,13 @@
                 <span class="text-brand-dark/60 dark:text-brand-light/60">{{ t('detail.country') }}</span>
                 <span class="font-medium dark:text-brand-light text-brand-dark">{{ app.country || 'N/A' }}</span>
              </div>
+             <!-- Missing Items Warning -->
+             <div v-if="getMissingForApp(app.id).length > 0" class="pt-2 flex flex-wrap gap-1">
+                <span v-for="(m, i) in getMissingForApp(app.id).slice(0, 3)" :key="i" class="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded border border-rose-500/20">
+                    ! {{ m }}
+                </span>
+                <span v-if="getMissingForApp(app.id).length > 3" class="text-[10px] text-rose-500 pt-0.5">+{{ getMissingForApp(app.id).length - 3 }}</span>
+             </div>
            </div>
            
            <div class="mt-6 pt-4 border-t dark:border-brand-light/10 border-brand-dark/10 flex items-center gap-3 relative z-10">
@@ -105,7 +112,7 @@
 <script setup lang="ts">
 import type { Application } from '~/types';
 
-const { applications, checklistItems, recommenders, fetchAll, upsertApplication } = useApplications();
+const { applications, checklistItems, recommenders, fetchAll, fetchAllData, upsertApplication } = useApplications();
 const { t } = useTranslation();
 const { formatDate } = useDate();
 const { isReadOnly } = useReadOnly();
@@ -114,12 +121,47 @@ const api = useApi();
 
 const search = ref('');
 const filterStatus = ref('');
+const filterMissing = ref('');
 const sortBy = ref('deadline');
 const fileInput = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
-  fetchAll();
+  fetchAllData(); // Fetch full data for filters
 });
+
+// Compute missing items per app
+const appsWithMissing = computed(() => {
+   const map = new Map<string, string[]>();
+   
+   applications.value.forEach(app => {
+       const missing: string[] = [];
+       const items = checklistItems.value.filter(i => i.application_id === app.id);
+       
+       if (items.length === 0) {
+           // If no items, assume basic ones are missing? Or wait for seeding?
+           // Let's filter by seeded items that are 'missing'
+       } else {
+           items.forEach(i => {
+               if (i.state === 'missing') missing.push(i.item);
+           });
+       }
+       map.set(app.id, missing);
+   });
+   return map;
+});
+
+// Get unique missing items for filter
+const uniqueMissingItems = computed(() => {
+    const set = new Set<string>();
+    checklistItems.value.forEach(i => {
+        if (i.state === 'missing') set.add(i.item);
+    });
+    return Array.from(set).sort();
+});
+
+const getMissingForApp = (appId: string) => {
+    return appsWithMissing.value.get(appId) || [];
+};
 
 const exportData = () => {
    const data = {
@@ -147,7 +189,7 @@ const importData = async (event: Event) => {
          if (confirm(`Import ${json.applications?.length || 0} applications, ${json.checklist?.length || 0} items? This puts them in the database.`)) {
              await api.post('bulkUpsert', json);
              alert('Import started. It may take a moment to sync. Please refresh shortly.');
-             await fetchAll();
+             await fetchAllData();
          }
       } catch (err) {
          alert('Invalid JSON file');
@@ -185,6 +227,13 @@ const filteredApps = computed(() => {
   
   if (filterStatus.value) {
     res = res.filter(a => a.status === filterStatus.value);
+  }
+
+  if (filterMissing.value) {
+      res = res.filter(a => {
+          const missing = appsWithMissing.value.get(a.id);
+          return missing?.includes(filterMissing.value);
+      });
   }
   
   res.sort((a, b) => {

@@ -15,6 +15,18 @@ export const useApplications = () => {
         loading.value = false;
     };
 
+    const fetchAllData = async () => {
+        loading.value = true;
+        const [apps, items] = await Promise.all([
+            api.get<Application[]>('listApplications'),
+            api.get<ChecklistItem[]>('listChecklist')
+        ]);
+
+        if (apps) applications.value = apps;
+        if (items) checklistItems.value = items;
+        loading.value = false;
+    };
+
     const fetchDetails = async (appId: string) => {
         loading.value = true;
         const [cl, recs] = await Promise.all([
@@ -210,6 +222,7 @@ export const useApplications = () => {
         loading,
         saving,
         fetchAll,
+        fetchAllData,
         fetchDetails,
         upsertApplication,
         deleteApplication,
