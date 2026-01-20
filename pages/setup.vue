@@ -12,6 +12,26 @@
         <p class="text-lg text-brand-dark/60 dark:text-brand-light/60 max-w-2xl mx-auto leading-relaxed">
           {{ t('setup.subtitle') }}
         </p>
+
+        <!-- Privacy & Security Note -->
+        <div class="mt-8 p-6 glass border border-brand-teal/20 rounded-3xl text-left max-w-2xl mx-auto relative overflow-hidden group">
+           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <svg class="w-12 h-12 text-brand-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+           </div>
+           <h3 class="font-bold text-brand-teal mb-2 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              Privacy & Your Data
+           </h3>
+           <p class="text-sm text-brand-dark/70 dark:text-brand-light/70 mb-3 leading-relaxed">
+              This website is a <strong>standalone frontend</strong>. We do not have a server or database. 
+              Everything you see—your applications, deadlines, and notes—lives exclusively in <strong>your own Google account</strong>.
+           </p>
+           <ul class="text-xs space-y-2 text-brand-dark/50 dark:text-brand-light/50 list-disc list-inside">
+              <li>Google will ask you to "Authorize" the script. This is normal; you are giving <strong>your own script</strong> permission to access <strong>your own sheet</strong>.</li>
+              <li>The MSc Tracker app (Vercel) only connects to the URL you provide below. No data is stored or seen by us.</li>
+              <li>You are the sole owner and admin of your personal database.</li>
+           </ul>
+        </div>
       </div>
 
       <!-- Invite Landing Card -->

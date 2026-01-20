@@ -185,7 +185,7 @@ const toggleReminders = async () => {
     const action = remindersEnabled.value ? 'disableReminders' : 'enableReminders';
     const msg = remindersEnabled.value 
         ? 'Disable daily email reminders?' 
-        : 'Enable daily 8AM email reminders? This requires the latest Code.js in your Apps Script.';
+        : 'Enable daily 8AM email reminders?\n\nNOTE: If this is your first time, Google will ask you to "Authorize" the script. You must accept to allow the script to send emails to you.';
         
     if (confirm(msg)) {
         await api.post(action, {});
