@@ -51,7 +51,7 @@ export default {
         seed_items: 'Générer liste',
         recommenders: 'Recommandants',
         notes: 'Notes & Idées',
-        notes_placeholder: 'Écrivez vos idées de SOP, identifiants, ou pensées ici...',
+        notes_placeholder: 'Écrivez vos idées de SOP, liens de brouillons, ou pensées ici...',
         last_updated: 'Dernière màj',
     },
     setup: {

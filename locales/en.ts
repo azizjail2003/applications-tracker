@@ -51,7 +51,7 @@ export default {
         seed_items: 'Seed Items',
         recommenders: 'Recommenders',
         notes: 'Notes & Ideas',
-        notes_placeholder: 'Write your SOP ideas, login credentials, or random thoughts here...',
+        notes_placeholder: 'Write your SOP ideas, draft links, or random thoughts here...',
         last_updated: 'Last updated',
     },
     setup: {
