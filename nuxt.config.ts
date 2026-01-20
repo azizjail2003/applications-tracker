@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots'],
 
   site: {
-    url: 'https://msc-application-tracker.vercel.app', // TODO: user should update this to their actual domain
+    url: 'https://applications-tracker.vercel.app',
     name: 'MSc Applications Tracker',
   },
 
