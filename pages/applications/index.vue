@@ -101,10 +101,14 @@
       <!-- Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <NuxtLink 
-          v-for="app in filteredApps" 
+          v-for="(app, index) in filteredApps" 
           :key="app.id"
           :to="`/applications/${app.id}`"
-          class="glass-card p-6 rounded-2xl hover:-translate-y-2 hover:shadow-xl dark:bg-brand-light/5 bg-white border border-brand-dark/10 dark:border-brand-light/10 transition-all duration-300 group relative overflow-hidden"
+          v-motion
+          :initial="{ opacity: 0, y: 50 }"
+          :enter="{ opacity: 1, y: 0, transition: { delay: index * 50, type: 'spring', stiffness: 250, damping: 25 } }"
+          v-tilt
+          class="glass-card p-6 rounded-2xl dark:bg-brand-light/5 bg-white border border-brand-dark/10 dark:border-brand-light/10 transition-all duration-300 group relative overflow-visible"
         >
            <!-- Hover Glow -->
            <div class="absolute inset-0 bg-brand-teal/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>

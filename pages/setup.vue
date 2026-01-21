@@ -94,7 +94,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <!-- Step A -->
-              <div class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300">
+              <div 
+                v-motion
+                :initial="{ opacity: 0, x: -50 }"
+                :enter="{ opacity: 1, x: 0, transition: { delay: 100, type: 'spring' } }"
+                class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300"
+              >
                 <div class="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center mb-4 text-brand-teal group-hover:scale-110 transition-transform font-bold">A</div>
                 <h3 class="font-bold text-brand-dark dark:text-brand-light mb-3 tracking-tight">{{ t('setup.step_a') }}</h3>
                 <ol class="text-xs space-y-2 opacity-80 list-decimal list-inside pl-1">
@@ -143,7 +148,12 @@
               </div>
 
               <!-- Step B -->
-              <div class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300">
+              <div 
+                v-motion
+                :initial="{ opacity: 0, x: 50 }"
+                :enter="{ opacity: 1, x: 0, transition: { delay: 200, type: 'spring' } }"
+                class="group p-6 rounded-3xl bg-brand-dark/5 dark:bg-brand-light/5 border border-brand-dark/5 dark:border-brand-light/5 hover:border-brand-teal/30 transition-all duration-300"
+              >
                 <div class="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center mb-4 text-brand-teal group-hover:scale-110 transition-transform font-bold">B</div>
                 <h3 class="font-bold text-brand-dark dark:text-brand-light mb-3 tracking-tight">{{ t('setup.step_b') }}</h3>
                 <ol class="text-xs space-y-2 opacity-80 list-decimal list-inside pl-1">

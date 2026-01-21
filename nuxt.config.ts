@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots', '@vite-pwa/nuxt'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap', '@nuxtjs/robots', '@vite-pwa/nuxt', '@vueuse/motion/nuxt'],
 
   site: {
     url: 'https://applications-tracker.vercel.app',
